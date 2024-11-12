@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace library_manager_server.Controllers
 {
@@ -21,6 +22,7 @@ namespace library_manager_server.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogInformation("yep");
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -29,5 +31,16 @@ namespace library_manager_server.Controllers
             })
             .ToArray();
         }
+
+        [HttpGet("{id}", Name = "GetWeatherForecast{id}")]
+        public WeatherForecast Get(int id)
+        {
+            return new WeatherForecast()
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(id)),
+                TemperatureC = id,
+                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+            };
+        } 
     }
 }
