@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using library_manager_server.model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace library_manager_server.Controllers
@@ -7,19 +8,12 @@ namespace library_manager_server.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private LibrayManager LibrayManager;
+        private LibrayManager librayManager;
 
         public BooksController(LibrayManager libraryManager)
         {
-            LibrayManager = libraryManager;
+            this.librayManager = libraryManager;
         }
-
-        // [HttpGet("/allbooks")]
-        // public IEnumerable<Book> GetAllBooks()
-        // {
-        //     List<Book> output = LibrayManager.GetBooks();
-        //     return output.ToArray();
-        // }
 
         [HttpGet()]
         public ActionResult<IEnumerable<Book>> GetBooks([FromQuery] int limit,[FromQuery] int offset)
@@ -28,10 +22,9 @@ namespace library_manager_server.Controllers
             List<Book> books = LibrayManager.GetBooks(limit, offset);
             return books.ToArray();
         }
-
         
         [HttpGet("{isbn}")]
-        public ActionResult<Book> GetBook(int isbn)
+        public ActionResult<Book> GetBook(string isbn)
         {
             Book? book = LibrayManager.GetBook(isbn);
             if(book == null) return NotFound();
