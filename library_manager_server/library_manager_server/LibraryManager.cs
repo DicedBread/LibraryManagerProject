@@ -1,83 +1,116 @@
 using library_manager_server;
+using library_manager_server.model;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.Security.Cryptography;
 using System.Text;
 
-public class LibrayManager{
+public class LibrayManager : ILibraryManger{
 
-    NpgsqlDataSource dataSource;
+	NpgsqlDataSource dataSource;
 
-    public LibrayManager(NpgsqlDataSource dataSource)
+	public LibrayManager(NpgsqlDataSource dataSource)
+	{
+		this.dataSource = dataSource;
+	}
+
+	/// <summary>
+	/// get book within range limit with offset 
+	/// </summary>
+	/// <param name="limit">number of books to retive</param>
+	/// <param name="offset">offset to start counting limit</param>
+	/// <returns></returns>
+	public List<Book> GetBooks(int limit, int offset)
+	{
+		List<Book> books = new List<Book>();
+		if (limit <= 0 || offset < 0) return books;
+
+		string query = @"
+			SELECT isbn, title, authour, publisher, img_url FROM books 
+			NATURAL JOIN authours
+			NATURAL JOIN publishers
+			limit @limit offset @offset
+		";
+		
+		using NpgsqlCommand cmd = dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue("limit", limit);
+		cmd.Parameters.AddWithValue("offset", offset);
+		using NpgsqlDataReader reader = cmd.ExecuteReader();
+		while (reader.Read())
+		{
+			Book book = new Book()
+			{
+				Id = reader.GetString(0),
+				Title = reader.GetString(1),
+				Authour = reader.GetString(2),
+				Publisher = reader.GetString(3),
+				ImgUrl = reader.GetString(4),
+			};
+			books.Add(book);
+		}
+
+		return books;
+	}
+
+	/// <summary>
+	/// get book with isbn number 
+	/// </summary>
+	/// <param name="isbn">isbn of book to retrive</param>
+	/// <returns>book with isbn number or null if not book assosiated</returns>
+	public Book? GetBook(string isbn)
+	{
+        string query = @"
+			SELECT isbn, title, authour, publisher, img_url FROM books 
+			NATURAL JOIN authours
+			NATURAL JOIN publishers
+			WHERE isbn = @isbn
+		";
+
+        using NpgsqlCommand cmd = dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue("isbn", isbn);
+		using NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.HasRows)
+		{
+			Book book = new Book()
+			{
+				Id = reader.GetString(0),
+				Title = reader.GetString(1),
+				Authour = reader.GetString(2),
+				Publisher = reader.GetString(3),
+				ImgUrl = reader.GetString(4),
+			};
+			return book;
+		}
+		return null;
+	}
+	/// <summary>
+	/// check if user has entered valid password
+	/// </summary>
+	/// <param name="username"></param>
+	/// <param name="password"></param>
+	/// <returns>pass or failed</returns>
+    public PasswordVerificationResult AuthenticateUser(string username, string password)
     {
-        this.dataSource = dataSource;
-    }
+		PasswordHasher<string> ph = new PasswordHasher<string>();
 
-    public List<Book> GetBooks()
-    {
-        List<Book> list = new List<Book>();
-        using NpgsqlCommand command = dataSource.CreateCommand("SELECT * FROM books");
-        using var reader = command.ExecuteReader();
+		string usernameParamName = "username";
+		string query = $@"
+			SELECT password FROM customer WHERE username = @{usernameParamName};
+		";
 
-        int i = 0;
-        while (reader.Read())
-        {
-            Book book = new Book() {
-                Id = reader.GetString(0),
-                Title = reader.GetString(1),
-                Authour = reader.GetString(2),
-                ImgUrl = reader.GetString(3),
-            };
+		using NpgsqlCommand cmd = dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(usernameParamName, username);
+		using NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.HasRows)
+		{
+			if (reader.Read())
+			{
+				string hashedPswd = reader.GetString(0);
+                return ph.VerifyHashedPassword(username, hashedPswd, password);
+            }
+		}
 
-            list.Add(book);
-            
-        }
-
-
-        return list;
-    }
-
-    public List<Book> GetBooks(int limit, int offset)
-    {
-        List<Book> books = new List<Book>();
-        if (limit <= 0 || offset < 0) return books;
-
-        using NpgsqlCommand cmd = dataSource.CreateCommand("SELECT * FROM books limit @limit OFFSET @offset");
-        cmd.Parameters.AddWithValue("limit", limit);
-        cmd.Parameters.AddWithValue("offset", offset);
-        using NpgsqlDataReader reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            Book book = new Book()
-            {
-                Id = reader.GetString(0),
-                Title = reader.GetString(1),
-                Authour = reader.GetString(2),
-                ImgUrl = reader.GetString(3),
-            };
-            books.Add(book);
-        }
-
-        return books;
-    }
-
-    // get book with isbn number 
-    public Book? GetBook(int isbn)
-    {
-        using NpgsqlCommand cmd = dataSource.CreateCommand("SELECT * FROM books WHERE ISBN = @isbn");
-        cmd.Parameters.AddWithValue("isbn", isbn);
-        using NpgsqlDataReader reader = cmd.ExecuteReader();
-        if (reader.HasRows)
-        {
-            Book book = new Book()
-            {
-                Id = reader.GetString(0),
-                Title = reader.GetString(1),
-                Authour = reader.GetString(2),
-                ImgUrl = reader.GetString(3)
-            };
-            return book;
-        }
-        return null;
+		return PasswordVerificationResult.Failed;
     }
 } 
