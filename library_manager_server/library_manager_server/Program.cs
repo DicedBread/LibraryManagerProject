@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Npgsql;
 
 internal class Program
@@ -5,6 +6,16 @@ internal class Program
     private static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        var LocalhostHttp = "_LocalhostHttp";
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: LocalhostHttp,
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
+                });
+        });
 
         string? user = builder.Configuration["library:testuser"];
         string? pass = builder.Configuration["library:testPassword"];
@@ -15,8 +26,8 @@ internal class Program
         if (user == null || pass == null || address == null || port == null)
         {
             Console.WriteLine("missing database info");
-        }
-
+        }    
+        
         var conStrB = new Npgsql.NpgsqlConnectionStringBuilder()
         {
             Host = address,
@@ -33,6 +44,8 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddSingleton(lm);
+
+        builder.Services.AddAuthentication().AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
         //builder.Services.AddTransient<LibrayManager, LibrayManager>();
 
         builder.Logging.AddConsole();
@@ -42,12 +55,16 @@ internal class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors(LocalhostHttp);
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
 
+
+
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
