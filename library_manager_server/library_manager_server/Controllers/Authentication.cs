@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,6 +10,8 @@ namespace library_manager_server.Controllers
     [Route("api/[controller]")]
     public class Authentication : ControllerBase
 	{
+		public static readonly string SESSION_ID_NAME = "sessionId";
+
         private LibrayManager libraryManger;
 
         public Authentication(LibrayManager librayManager) {
@@ -21,31 +24,49 @@ namespace library_manager_server.Controllers
 		//}
 
 		[HttpPost()]
-		public async Task<IActionResult> Login([FromHeaderAttribute] string username, [FromHeaderAttribute] string password) { 
+		public async Task<IActionResult> Login( string username,  string password) { 
 
-			
-
-			if(username == "test" && password == "test"){
-				var claims = new List<Claim>() {
-					new Claim("username", username)
-				};
-				
-				ClaimsIdentity claimsIden = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-				AuthenticationProperties authProperties = new AuthenticationProperties();
-
-				await HttpContext.SignInAsync(
-					CookieAuthenticationDefaults.AuthenticationScheme,
-					new ClaimsPrincipal(claimsIden),
-					authProperties
-				);
-				return Ok();
-			}
-			else
+			switch (libraryManger.AuthenticateUser(username, password))
 			{
-				return Unauthorized();
-			}
+				case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success:
+					Console.WriteLine("sdojasfjasnf");
+					Guid guid = Guid.NewGuid();
+					double? userId = libraryManger.GetUserId(username);
+					if(userId is not null)
+					{
+						libraryManger.AddSession(userId.Value, guid);
 
-			return NotFound();
+						var claims = new List<Claim>() {
+							new Claim(SESSION_ID_NAME, guid.ToString()),
+						};
+
+
+                        ClaimsIdentity claimsIden = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        AuthenticationProperties authProperties = new AuthenticationProperties();
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIden),
+                        authProperties
+                    );
+                        return Ok();
+					}
+					return Unauthorized();
+
+
+                case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed:
+					return Unauthorized();
+				
+
+				default: return Unauthorized();
+			}
+		}
+
+		[Authorize(Policy = "ActiveSession")]
+		[HttpGet("/test")]
+		public async Task<string> testc()
+		{
+			return "hello world";
 		}
 	}
 }

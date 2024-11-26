@@ -1,5 +1,9 @@
+using library_manager_server;
+using library_manager_server.Controllers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Npgsql;
+using System.Diagnostics.Eventing.Reader;
 
 internal class Program
 {
@@ -38,15 +42,26 @@ internal class Program
         };
 
         using var dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
-        LibrayManager lm = new LibrayManager(dataSource);
+      
+        
+        LibrayManager libManager = new LibrayManager(dataSource);
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddSingleton(lm);
+        builder.Services.AddSingleton(libManager);
+        builder.Services.AddSingleton<IAuthorizationHandler, SessionAuth>();
 
         builder.Services.AddAuthentication().AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
-        //builder.Services.AddTransient<LibrayManager, LibrayManager>();
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ActiveSession", p =>
+                p.Requirements.Add(new ActiveSessionRequirement(libManager))
+            );
+            //options.AddPolicy("ActiveSession", p => p.RequireClaim(Authentication.SESSION_ID_NAME));
+        });
+
+
 
         builder.Logging.AddConsole();
 
@@ -61,12 +76,8 @@ internal class Program
         }
 
         app.UseHttpsRedirection();
-
-
-
         app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
 
 

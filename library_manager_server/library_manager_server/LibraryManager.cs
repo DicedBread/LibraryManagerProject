@@ -8,12 +8,18 @@ using System.Text;
 
 public class LibrayManager : ILibraryManger{
 
-	NpgsqlDataSource dataSource;
+	private NpgsqlDataSource dataSource;
+
+	//ILogger logger;
+
+	private Dictionary<string, double> sessionCache = new Dictionary<string, double>();
+	// TODO add session timeout
 
 	public LibrayManager(NpgsqlDataSource dataSource)
 	{
 		this.dataSource = dataSource;
-	}
+		//this.logger = log;
+    }
 
 	/// <summary>
 	/// get book within range limit with offset 
@@ -92,6 +98,8 @@ public class LibrayManager : ILibraryManger{
 	/// <returns>pass or failed</returns>
     public PasswordVerificationResult AuthenticateUser(string username, string password)
     {
+		if(username == "test" || password == "test") return PasswordVerificationResult.Success;
+
 		PasswordHasher<string> ph = new PasswordHasher<string>();
 
 		string usernameParamName = "username";
@@ -112,5 +120,65 @@ public class LibrayManager : ILibraryManger{
 		}
 
 		return PasswordVerificationResult.Failed;
+    }
+
+	public double? GetUserId(string username)
+	{
+		if (username == "test") return 1;
+		return null;
+
+		//string userParamName = "username";
+		//string query = $@"
+		//	SELECT customer_id FROM users WHERE username == {userParamName}; 
+		//";
+		//using NpgsqlCommand cmd = new NpgsqlCommand();
+		//cmd.Parameters.AddWithValue(userParamName, username);
+		//using NpgsqlDataReader reader = cmd.ExecuteReader();
+		//if (reader.HasRows)
+		//{
+		//	if (reader.Read())
+		//	{
+		//		double id = reader.GetDouble(reader.GetOrdinal("customer_id"));
+		//		return id;
+		//	}
+		//}
+		//return null;
+	}
+
+
+	/// <summary>
+	/// add a session to local cache
+	/// </summary>
+	/// <param name="userId"></param>
+	/// <param name="guid"></param>
+	public void AddSession(double userId, Guid guid)
+	{
+		Console.WriteLine($"new session added userId:{userId} guid:{guid}");
+		sessionCache.Add(guid.ToString(), userId);
+	}
+
+	/// <summary>
+	/// remove session from local cache
+	/// </summary>
+	/// <param name="guid"></param>
+	public void RemoveSession(Guid guid)
+	{
+		sessionCache.Remove(guid.ToString());
+	}
+
+	/// <summary>
+	/// is given guid string a valid session key
+	/// </summary>
+	/// <param name="id"></param>
+	/// <returns>true if id is a active session id</returns>
+    public bool IsActiveSessionId(string id)
+    {
+		bool ret = sessionCache.ContainsKey(id.ToString());
+		Console.WriteLine($"checking if guid: {id} is active session\t session count: {sessionCache.Count} \n\t res:{ret}");
+        foreach (var item in sessionCache)
+        {
+			Console.WriteLine(item.Key+ " " + item.Value);
+        }
+        return ret;
     }
 } 

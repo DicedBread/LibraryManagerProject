@@ -10,23 +10,20 @@ namespace library_manager_server.Controllers
     {
         private LibrayManager librayManager;
 
-        public BooksController(LibrayManager libraryManager)
-        {
-            this.librayManager = libraryManager;
-        }
+        public BooksController(LibrayManager libraryManager) => this.librayManager = libraryManager;
 
         [HttpGet()]
         public ActionResult<IEnumerable<Book>> GetBooks([FromQuery] int limit,[FromQuery] int offset)
         {
             if (limit <= 0 || offset < 0) return BadRequest();
-            List<Book> books = LibrayManager.GetBooks(limit, offset);
+            List<Book> books = librayManager.GetBooks(limit, offset);
             return books.ToArray();
         }
         
         [HttpGet("{isbn}")]
         public ActionResult<Book> GetBook(string isbn)
         {
-            Book? book = LibrayManager.GetBook(isbn);
+            Book? book = librayManager.GetBook(isbn);
             if(book == null) return NotFound();
             return book;
         }
