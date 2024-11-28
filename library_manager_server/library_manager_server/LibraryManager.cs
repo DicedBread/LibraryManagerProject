@@ -12,7 +12,6 @@ public class LibrayManager : ILibraryManger{
 
 	//ILogger logger;
 
-	//private Dictionary<string, double> sessionCache = new Dictionary<string, double>();
 
 	// TODO add session cache
 	public LibrayManager(NpgsqlDataSource dataSource)
@@ -93,38 +92,70 @@ public class LibrayManager : ILibraryManger{
 	/// <summary>
 	/// check if user has entered valid password
 	/// </summary>
-	/// <param name="username"></param>
+	/// <param name="email"></param>
 	/// <param name="password"></param>
 	/// <returns>pass or failed</returns>
-    public PasswordVerificationResult AuthenticateUser(string username, string password)
+    public PasswordVerificationResult AuthenticateUser(string email, string password)
     {
-		if(username == "test" || password == "test") return PasswordVerificationResult.Success;
+		if(email == "test" || password == "test") return PasswordVerificationResult.Success;
 
 		PasswordHasher<string> ph = new PasswordHasher<string>();
 
-		string usernameParamName = "username";
+		string emailParamName = "email";
 		string query = $@"
-			SELECT password FROM customer WHERE username = @{usernameParamName};
+			SELECT password FROM users WHERE username = @{email};
 		";
 
 		using NpgsqlCommand cmd = dataSource.CreateCommand(query);
-		cmd.Parameters.AddWithValue(usernameParamName, username);
+		cmd.Parameters.AddWithValue(emailParamName, email);
 		using NpgsqlDataReader reader = cmd.ExecuteReader();
 		if (reader.HasRows)
 		{
 			if (reader.Read())
 			{
 				string hashedPswd = reader.GetString(0);
-                return ph.VerifyHashedPassword(username, hashedPswd, password);
+                return ph.VerifyHashedPassword(email, hashedPswd, password);
             }
 		}
-
 		return PasswordVerificationResult.Failed;
     }
 
-	public double? GetUserId(string username)
+	/// <summary>
+	/// inserts new user into the db
+	/// </summary>
+	/// <param name="email"></param>
+	/// <param name="password"></param>
+	/// <param name="fname"></param>
+	/// <param name="lname"></param>
+	/// <returns>true if added successfully false if not</returns>
+	public bool AddUser(string email, string password, string fname, string lname)
 	{
-		if (username == "test") return 1;
+		string hashedPassword = new PasswordHasher<string>().HashPassword(email, password);
+
+		string emailParamName = "emailParam", pwParamName = "pwParamName", fnameParamName = "fNParam", lnameParamName = "lNParam";
+		string query = $@"
+			INSERT INTO users (email, password, fname, lname) 
+			VALUES (@{emailParamName}, @{pwParamName}, @{fnameParamName}, @{lnameParamName});
+		";
+
+		using NpgsqlCommand cmd = dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(emailParamName, email);
+		cmd.Parameters.AddWithValue(pwParamName, hashedPassword);
+		cmd.Parameters.AddWithValue(fnameParamName, fname);
+        cmd.Parameters.AddWithValue(lnameParamName, lname);
+
+		int ret = cmd.ExecuteNonQuery();
+		if(ret > 0)
+		{
+			return true;
+		}
+        return false;
+	}
+
+
+	public double? GetUserId(string email)
+	{
+		if (email == "test") return 1;
 		return null;
 
 		//string userParamName = "username";
