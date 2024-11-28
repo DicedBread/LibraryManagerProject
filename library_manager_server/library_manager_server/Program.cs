@@ -1,5 +1,6 @@
 using library_manager_server;
 using library_manager_server.Controllers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Npgsql;
@@ -30,8 +31,8 @@ internal class Program
         if (user == null || pass == null || address == null || port == null)
         {
             Console.WriteLine("missing database info");
-        }    
-        
+        }
+
         var conStrB = new Npgsql.NpgsqlConnectionStringBuilder()
         {
             Host = address,
@@ -42,30 +43,52 @@ internal class Program
         };
 
         using var dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
-      
-        
-        LibrayManager libManager = new LibrayManager(dataSource);
+
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddSingleton(libManager);
-        builder.Services.AddSingleton<IAuthorizationHandler, SessionAuth>();
+        builder.Services.AddSingleton(dataSource);
+        builder.Services.AddSingleton<LibrayManager>();
+        builder.Services.AddSingleton<SessionHandler>();
+        builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthoriizationHandler>();
+        builder.Services.AddLogging();
 
-        builder.Services.AddAuthentication().AddCookie(CookieAuthenticationDefaults.AuthenticationScheme);
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+        {
+            // prevent rederect to login/AccessDenied and just returns error codes
+            options.Events = new CookieAuthenticationEvents()
+            {
+                OnRedirectToLogin = (ctx) =>
+                {
+                    if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                    {
+                        ctx.Response.StatusCode = 401;
+                    }
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = (ctx) =>
+                {
+                    if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                    {
+                        ctx.Response.StatusCode = 403;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
         builder.Services.AddAuthorization(options =>
         {
             options.AddPolicy("ActiveSession", p =>
-                p.Requirements.Add(new ActiveSessionRequirement(libManager))
+                p.Requirements.Add(new ActiveSessionRequirement())
             );
-            //options.AddPolicy("ActiveSession", p => p.RequireClaim(Authentication.SESSION_ID_NAME));
         });
-
 
 
         builder.Logging.AddConsole();
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

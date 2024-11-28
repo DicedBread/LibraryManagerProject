@@ -6,35 +6,39 @@ using System.Security.Claims;
 
 namespace library_manager_server.Controllers
 {
+	[Authorize(policy: "ActiveSession")]
     [ApiController]
     [Route("api/[controller]")]
-    public class Authentication : ControllerBase
+    public class Account : ControllerBase
 	{
 		public static readonly string SESSION_ID_NAME = "sessionId";
 
         private LibrayManager libraryManger;
+        private readonly SessionHandler sessionHandler;
+        private readonly ILogger<Account> logger;
 
-        public Authentication(LibrayManager librayManager) {
+        public Account(LibrayManager librayManager, SessionHandler sessionHandler, ILogger<Account> logger) {
 			this.libraryManger = librayManager;
-		}
+            this.sessionHandler = sessionHandler;
+            this.logger = logger;
+        }
 
 		//public IActionResult Register()
 		//{
 		//	return NotFound();
 		//}
-
-		[HttpPost()]
-		public async Task<IActionResult> Login( string username,  string password) { 
-
+		[AllowAnonymous]
+		[HttpPost("login")]
+		public async Task<IActionResult> Login(string username, string password) {
+			logger.LogInformation("login attempted");
 			switch (libraryManger.AuthenticateUser(username, password))
 			{
 				case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success:
-					Console.WriteLine("sdojasfjasnf");
 					Guid guid = Guid.NewGuid();
 					double? userId = libraryManger.GetUserId(username);
 					if(userId is not null)
 					{
-						libraryManger.AddSession(userId.Value, guid);
+						sessionHandler.AddSession(userId.Value, guid);
 
 						var claims = new List<Claim>() {
 							new Claim(SESSION_ID_NAME, guid.ToString()),
@@ -63,8 +67,8 @@ namespace library_manager_server.Controllers
 		}
 
 		[Authorize(Policy = "ActiveSession")]
-		[HttpGet("/test")]
-		public async Task<string> testc()
+		[HttpGet("test")]
+		public async Task<string> test()
 		{
 			return "hello world";
 		}

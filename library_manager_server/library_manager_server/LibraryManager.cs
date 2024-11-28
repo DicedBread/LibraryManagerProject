@@ -12,9 +12,9 @@ public class LibrayManager : ILibraryManger{
 
 	//ILogger logger;
 
-	private Dictionary<string, double> sessionCache = new Dictionary<string, double>();
-	// TODO add session timeout
+	//private Dictionary<string, double> sessionCache = new Dictionary<string, double>();
 
+	// TODO add session cache
 	public LibrayManager(NpgsqlDataSource dataSource)
 	{
 		this.dataSource = dataSource;
@@ -146,39 +146,5 @@ public class LibrayManager : ILibraryManger{
 	}
 
 
-	/// <summary>
-	/// add a session to local cache
-	/// </summary>
-	/// <param name="userId"></param>
-	/// <param name="guid"></param>
-	public void AddSession(double userId, Guid guid)
-	{
-		Console.WriteLine($"new session added userId:{userId} guid:{guid}");
-		sessionCache.Add(guid.ToString(), userId);
-	}
 
-	/// <summary>
-	/// remove session from local cache
-	/// </summary>
-	/// <param name="guid"></param>
-	public void RemoveSession(Guid guid)
-	{
-		sessionCache.Remove(guid.ToString());
-	}
-
-	/// <summary>
-	/// is given guid string a valid session key
-	/// </summary>
-	/// <param name="id"></param>
-	/// <returns>true if id is a active session id</returns>
-    public bool IsActiveSessionId(string id)
-    {
-		bool ret = sessionCache.ContainsKey(id.ToString());
-		Console.WriteLine($"checking if guid: {id} is active session\t session count: {sessionCache.Count} \n\t res:{ret}");
-        foreach (var item in sessionCache)
-        {
-			Console.WriteLine(item.Key+ " " + item.Value);
-        }
-        return ret;
-    }
 } 
