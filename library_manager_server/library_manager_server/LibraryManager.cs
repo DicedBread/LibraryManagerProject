@@ -97,13 +97,13 @@ public class LibrayManager : ILibraryManger{
 	/// <returns>pass or failed</returns>
     public PasswordVerificationResult AuthenticateUser(string email, string password)
     {
-		if(email == "test" || password == "test") return PasswordVerificationResult.Success;
+		//if(email == "test" || password == "test") return PasswordVerificationResult.Success;
 
 		PasswordHasher<string> ph = new PasswordHasher<string>();
 
 		string emailParamName = "email";
 		string query = $@"
-			SELECT password FROM users WHERE username = @{email};
+			SELECT password FROM users WHERE email = @{emailParamName};
 		";
 
 		using NpgsqlCommand cmd = dataSource.CreateCommand(query);
@@ -152,30 +152,20 @@ public class LibrayManager : ILibraryManger{
         return false;
 	}
 
-
 	public double? GetUserId(string email)
 	{
-		if (email == "test") return 1;
+		string emailParamName = "email";
+		string query = $@"
+			SELECT userid FROM users WHERE email = @{emailParamName}; 
+		";
+		using NpgsqlCommand cmd = dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(emailParamName, email);
+		using NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.Read())
+		{
+			double id = reader.GetDouble(reader.GetOrdinal("userid"));
+			return id;
+		}
 		return null;
-
-		//string userParamName = "username";
-		//string query = $@"
-		//	SELECT customer_id FROM users WHERE username == {userParamName}; 
-		//";
-		//using NpgsqlCommand cmd = new NpgsqlCommand();
-		//cmd.Parameters.AddWithValue(userParamName, username);
-		//using NpgsqlDataReader reader = cmd.ExecuteReader();
-		//if (reader.HasRows)
-		//{
-		//	if (reader.Read())
-		//	{
-		//		double id = reader.GetDouble(reader.GetOrdinal("customer_id"));
-		//		return id;
-		//	}
-		//}
-		//return null;
 	}
-
-
-
 } 

@@ -6,7 +6,6 @@ namespace library_manager_server
     public class SessionAuthoriizationHandler : AuthorizationHandler<ActiveSessionRequirement>
     {
         SessionHandler sessionHandler;
-        // TODO just use de to handle session and stuff idk bruh fuck the Policy provider
         public SessionAuthoriizationHandler(SessionHandler sessionHandler) => this.sessionHandler = sessionHandler;
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ActiveSessionRequirement requirement)
