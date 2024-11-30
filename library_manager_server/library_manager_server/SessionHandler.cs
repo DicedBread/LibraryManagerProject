@@ -24,10 +24,10 @@
         /// </summary>
         /// <param name="guid"></param>
         // <returns>true if session removed false if guid not found</returns>
-        public bool RemoveSession(Guid guid)
+        public bool RemoveSession(string guid)
         {
             logger?.LogInformation($"removing session {guid}");
-            return sessionsCache.Remove(guid.ToString());
+            return sessionsCache.Remove(guid);
         }
 
         // TODO abstract session handler

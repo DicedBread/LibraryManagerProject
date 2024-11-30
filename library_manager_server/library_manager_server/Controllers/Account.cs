@@ -104,6 +104,19 @@ namespace library_manager_server.Controllers
 			}
 		}
 
+		[HttpPost("logout")]
+		public async Task<IActionResult> Logout()
+		{
+			logger.LogInformation("logout");
+			string providedSessionId = HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
+			if (sessionHandler.RemoveSession(providedSessionId))
+			{
+				await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+				return Ok();
+			};
+			return BadRequest();
+		}
+
 		[Authorize(Policy = "ActiveSession")]
 		[HttpGet("test")]
 		public async Task<string> test()
