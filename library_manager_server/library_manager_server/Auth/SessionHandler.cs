@@ -29,11 +29,7 @@
             logger?.LogInformation($"removing session {guid}");
             return sessionsCache.Remove(guid);
         }
-
-        // TODO abstract session handler
-
-
-
+        
         /// <summary>
         /// is given guid string a valid session key
         /// </summary>

@@ -80,7 +80,7 @@ namespace library_manager_server.Controllers
 					{
 						sessionHandler.AddSession(userId.Value, guid);
 
-						var claims = new List<Claim>() {
+						List<Claim> claims = new List<Claim>() {
 							new Claim(SESSION_ID_NAME, guid.ToString()),
 						};
 
