@@ -13,11 +13,11 @@ namespace library_manager_server_tests
         [Test]
         public void Test1()
         {
-            Book testOut = new Book() { Authour = "jim", Id = "okwefkm", ImgUrl = "asdf", Title = "asd" };
+            // Book testOut = new Book() { Authour = "jim", Id = "okwefkm", ImgUrl = "asdf", Title = "asd" };
 
 
-            var mockDB = new Mock<LibrayManager>();
-                mockDB.Setup(m => m.GetBook("jim")).Returns(testOut);
+            // var mockDB = new Mock<LibrayManager>();
+                // mockDB.Setup(m => m.GetBook("jim")).Returns(testOut);
 
 
             Assert.False(true);

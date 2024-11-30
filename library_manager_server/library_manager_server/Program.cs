@@ -49,7 +49,7 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddSingleton(dataSource);
-        builder.Services.AddSingleton<LibrayManager>();
+        builder.Services.AddSingleton<LibraryManager>();
         builder.Services.AddSingleton<SessionHandler>();
         builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthoriizationHandler>();
         builder.Services.AddLogging();

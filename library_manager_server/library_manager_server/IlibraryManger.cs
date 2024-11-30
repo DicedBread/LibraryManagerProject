@@ -7,8 +7,7 @@ namespace library_manager_server
     {
         public List<Book> GetBooks(int limit, int offset);
         public Book? GetBook(string isbn);
-
+        
         public PasswordVerificationResult AuthenticateUser(string username, string password);
-
     }
 }

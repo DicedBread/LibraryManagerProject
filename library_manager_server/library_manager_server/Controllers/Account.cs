@@ -14,12 +14,12 @@ namespace library_manager_server.Controllers
 	{
 		public static readonly string SESSION_ID_NAME = "sessionId";
 
-        private LibrayManager libraryManger;
+        private LibraryManager libraryManger;
         private readonly SessionHandler sessionHandler;
         private readonly ILogger<Account> logger;
 
-        public Account(LibrayManager librayManager, SessionHandler sessionHandler, ILogger<Account> logger) {
-			this.libraryManger = librayManager;
+        public Account(LibraryManager libraryManager, SessionHandler sessionHandler, ILogger<Account> logger) {
+			this.libraryManger = libraryManager;
             this.sessionHandler = sessionHandler;
             this.logger = logger;
 		}
