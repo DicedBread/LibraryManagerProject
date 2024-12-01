@@ -1,5 +1,6 @@
 import React, { ChangeEvent, ChangeEventHandler, useState } from "react";
 import "../style/App.css"
+import "../style/Form.css"
 
 interface Register {
     email: string,
@@ -28,7 +29,7 @@ function Register() {
     }
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="register">
             <br />
             <FormElement<string> 
                 name="Email"
@@ -43,6 +44,20 @@ function Register() {
                 type="text"
                 onChange={handleChange}
             /> 
+            <br />
+            <FormElement 
+                name="LastName"
+                value={inputs?.lName || ""}
+                type="text"
+                onChange={handleChange}
+            />
+            <br />
+            <FormElement
+                name="Password"
+                value={inputs?.password || ""}
+                type="password"
+                onChange={handleChange}
+            />
         </form>
     );
 }
