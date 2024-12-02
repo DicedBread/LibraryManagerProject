@@ -1,17 +1,25 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, HtmlHTMLAttributes, useState } from "react";
 import "../style/App.css"
 
+interface login{
+    username : string;
+    password : string;
+}
+
 function Login(){
-    const [inputs, setInputs] = useState({});
+    const [inputs, setInputs] = useState<login>();
     
     const handleSubmit = () => {
-        alert("name entered " + inputs.username);
+        alert("name entered " + inputs?.username);
     }
 
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setInputs(values => ({...values, [name]: value}));
+    const handleChange = (event : ChangeEvent<HTMLInputElement>) => {
+        // const valueTarget = event.target  
+        // const name = valueTarget.name;
+        // const value = valueTarget.value;
+        // setInputs(valueTarget => ({...valueTarget, [name]: value}));
+        const {name, value} = event.currentTarget;
+        setInputs({[name]: value } as Pick<login, keyof login>);
     } 
 
     return (
@@ -21,7 +29,7 @@ function Login(){
                 <input 
                     type="text" 
                     name="username"
-                    value={inputs.username || ""}
+                    value={inputs?.username || ""}
                     onChange={handleChange}
                 />
             </label>
@@ -31,7 +39,7 @@ function Login(){
                 <input 
                     type="password"
                     name="password"
-                    value={inputs.password || ""}
+                    value={inputs?.password || ""}
                     onChange={handleChange}    
                 />
             </label>

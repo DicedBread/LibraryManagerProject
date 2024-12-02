@@ -1,4 +1,5 @@
 import React, { ChangeEvent, ChangeEventHandler, useState } from "react";
+import FormElement from "./FormElement";
 import "../style/App.css"
 import "../style/Form.css"
 
@@ -26,6 +27,7 @@ function Register() {
         const fName = target.value.fName;
         const lName = target.value.lName;
         const password = target.value.password;
+        
     }
 
     return (
@@ -62,28 +64,7 @@ function Register() {
     );
 }
 
-interface FormParams<T extends string | number> {
-    name: string,
-    value: T,
-    type: React.HTMLInputTypeAttribute,
-    onChange: ChangeEventHandler,
-}
 
-function FormElement<T extends string | number>({name, value, type, onChange}: FormParams<T>) {
-    return (
-        <label htmlFor={name} className="formElement">
-            {name}
-            <br />
-            <input
-                type="email"
-                name="email"
-                id="email"
-                value={value}
-                onChange={onChange}
-            />
-        </label>
-    );
-}
 
 
 
