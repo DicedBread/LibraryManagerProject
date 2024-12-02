@@ -13,6 +13,8 @@ namespace library_manager_server.Controllers
         public BooksController(LibraryManager libraryManager) => this._libraryManager = libraryManager;
 
         [HttpGet()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<IEnumerable<Book>> GetBooks([FromQuery] int limit,[FromQuery] int offset)
         {
             if (limit <= 0 || offset < 0) return BadRequest();
@@ -21,6 +23,9 @@ namespace library_manager_server.Controllers
         }
         
         [HttpGet("{isbn}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
         public ActionResult<Book> GetBook(string isbn)
         {
             Book? book = _libraryManager.GetBook(isbn);
