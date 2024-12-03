@@ -5,26 +5,31 @@ namespace library_manager_server;
 
 [ApiController]
 [Route("api/[controller]")]
-public class Loans : ControllerBase
+public class Loans(LibraryManager libraryManager) : ControllerBase
 {
-    LibraryManager libraryManager;
-    public Loans(LibraryManager libraryManager) => this.libraryManager = libraryManager;
+    LibraryManager libraryManager = libraryManager;
 
     [HttpGet()]
     public async Task<IActionResult> GetLoans()
     {
         return NotFound();
     }
+    
+    [HttpGet("{loanId:double}")]
+    public async Task<IActionResult> GetLoan(double loanId)
+    {       
+        return NotFound();
+    }
 
-    [HttpPost()]
-    public async Task<IActionResult> CreateLoan()
+    [HttpPost("/loan/{loanId:double}")]
+    public async Task<IActionResult> CreateLoan(double loanId)
     {
         
         return NotFound();
     }
 
-    [HttpDelete()]
-    public async Task<IActionResult> DeleteLoans()
+    [HttpDelete("/loan/{loanId:double}")]
+    public async Task<IActionResult> DeleteLoans(double loanId)
     {
         
         return NotFound();

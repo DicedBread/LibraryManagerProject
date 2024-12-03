@@ -119,24 +119,22 @@ public class LibraryManager : ILibraryManger{
 	/// </summary>
 	/// <param name="email"></param>
 	/// <param name="password"></param>
-	/// <param name="fname"></param>
-	/// <param name="lname"></param>
+	/// <param name="username"></param>
 	/// <returns>true if added successfully false if not</returns>
-	public bool AddUser(string email, string password, string fname, string lname)
+	public bool AddUser(string email, string password, string username)
 	{
 		string hashedPassword = new PasswordHasher<string>().HashPassword(email, password);
 
-		string emailParamName = "emailParam", pwParamName = "pwParamName", fnameParamName = "fNParam", lnameParamName = "lNParam";
+		string emailParamName = "emailParam", pwParamName = "pwParamName", userNameParamName = "fNParam", lnameParamName = "lNParam";
 		string query = $"""
-		                INSERT INTO users (email, password, fname, lname) 
-		                VALUES (@{emailParamName}, @{pwParamName}, @{fnameParamName}, @{lnameParamName});
+		                INSERT INTO users (email, password, username) 
+		                VALUES (@{emailParamName}, @{pwParamName}, @{userNameParamName});
 		                """;
 
 		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(emailParamName, email);
 		cmd.Parameters.AddWithValue(pwParamName, hashedPassword);
-		cmd.Parameters.AddWithValue(fnameParamName, fname);
-        cmd.Parameters.AddWithValue(lnameParamName, lname);
+		cmd.Parameters.AddWithValue(userNameParamName, username);
 
 		int ret = cmd.ExecuteNonQuery();
 		if(ret > 0)
@@ -149,15 +147,74 @@ public class LibraryManager : ILibraryManger{
 	public double? GetUserId(string email)
 	{
 		const string emailParamName = "email";
-		const string query = $" SELECT userid FROM users WHERE email = @{emailParamName}; ";
+		const string query = $" SELECT user_id FROM users WHERE email = @{emailParamName}; ";
 		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(emailParamName, email);
 		using NpgsqlDataReader reader = cmd.ExecuteReader();
 		if (reader.Read())
 		{
-			double id = reader.GetDouble(reader.GetOrdinal("userid"));
+			double id = reader.GetDouble(reader.GetOrdinal("user_id"));
 			return id;
 		}
 		return null;
 	}
+
+	
+	public List<Loan> GetLoans(double userId)
+	{
+		List<Loan> loans = new List<Loan>();
+
+		const string userIdParamName = "userIdParam";
+		const string query = $@"
+			SELECT loans.loan_id, loans.user_id, loans.isbn, loans.date
+			FROM loans
+			WHERE loans.user_id = @{userIdParamName}
+			;";
+		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(userIdParamName, userId);
+		NpgsqlDataReader reader = cmd.ExecuteReader();
+		while (reader.Read())
+		{
+			Loan loan = new Loan()
+			{
+				Loan_id = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
+				User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
+				Date = reader.GetDateTime(reader.GetOrdinal("date")),
+			};
+			loans.Add(loan);
+		}
+		return loans;
+	}
+
+	/// <summary>
+	/// create loan 
+	/// </summary>
+	/// <param name="loan"></param>
+	/// <param name="isbn">loaned book</param>
+	/// <param name="customerId">user id</param>
+	/// <param name="date"></param>
+	/// <returns>true if succsessful otherwise false</returns>
+	public bool CreateLoan(string isbn, double customerId, DateTime date)
+	{
+		const string isbnPN = "isbn", userIdPN = "user_id", datePN = "date"; 
+		const string query = $@"
+			INSERT INTO loans (isbn, user_id, date)
+			VALUES (@{isbnPN}, @{userIdPN}, @{datePN});
+		";
+		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(isbnPN, isbn);
+		cmd.Parameters.AddWithValue(userIdPN, customerId);
+		cmd.Parameters.AddWithValue(datePN, date);
+		int ret = cmd.ExecuteNonQuery();
+		if (ret == 0) { return false; }
+		return true;
+	}
+
+	public bool deleteLoan(string isbn)
+	{
+		
+		
+		return false;
+	} 
 } 

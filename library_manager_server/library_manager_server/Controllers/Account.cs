@@ -26,22 +26,23 @@ namespace library_manager_server.Controllers
 
 		[AllowAnonymous]
 		[HttpPost("register")]
-		public async Task<IActionResult> Register(string email, string password, string fname, string lname)
+		public async Task<IActionResult> Register(string email, string password, string username)
 		{
-			logger.LogInformation("regiter attempt");
+			logger.LogInformation($"regiter of email {email} attempt");
 			email = email.Trim();
 			password = password.Trim();	
-			fname = fname.Trim();
-			lname = lname.Trim();
+			username = username.Trim();
 
 			if(!IsValidEmail(email)) { BadRequest("Invalid email"); }
 			if(!IsValidPassword(password)) { BadRequest("Invalid password"); }
-
+			
 			logger.LogInformation("Register attempted");
-			if (libraryManger.AddUser(email, password, fname, lname))
+			if (libraryManger.AddUser(email, password, username))
 			{
+				logger.LogInformation($"Register of {email} successfully");
 				return Ok();
 			}
+			logger.LogInformation($"Register failed {email}");
 			return BadRequest();
 		}
 
