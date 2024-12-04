@@ -125,7 +125,7 @@ public class LibraryManager : ILibraryManger{
 	{
 		string hashedPassword = new PasswordHasher<string>().HashPassword(email, password);
 
-		string emailParamName = "emailParam", pwParamName = "pwParamName", userNameParamName = "fNParam", lnameParamName = "lNParam";
+		string emailParamName = "emailParam", pwParamName = "pwParamName", userNameParamName = "usernameParam";
 		string query = $"""
 		                INSERT INTO users (email, password, username) 
 		                VALUES (@{emailParamName}, @{pwParamName}, @{userNameParamName});
@@ -190,7 +190,6 @@ public class LibraryManager : ILibraryManger{
 	/// <summary>
 	/// create loan 
 	/// </summary>
-	/// <param name="loan"></param>
 	/// <param name="isbn">loaned book</param>
 	/// <param name="customerId">user id</param>
 	/// <param name="date"></param>
@@ -211,10 +210,34 @@ public class LibraryManager : ILibraryManger{
 		return true;
 	}
 
-	public bool deleteLoan(string isbn)
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="loanId"></param>
+	/// <returns></returns>
+	public bool DeleteLoan(string loanId)
 	{
+		const string loanIdPn = "loan_id";
+		const string query = $@"DELETE FROM loans WHERE loan_id = @{loanIdPn}"; 
+		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(loanIdPn, loanId);
+		int ret = cmd.ExecuteNonQuery();
+		if (ret == 0) { return false; }
+		return true;
+	}
+
+	public bool OwnsLoan(double loanId, string userId)
+	{
+		const string loanIdPn = "loan_id";
+		const string userIdPn = "user_id";
+		const string query = $@"SElECT loanId, userId FROM loans WHERE loan_id = @{loanIdPn} AND user_id = @{userIdPn}";
 		
-		
-		return false;
-	} 
+		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(loanIdPn, loanId);
+		cmd.Parameters.AddWithValue(userIdPn, userId);
+		int ret = cmd.ExecuteNonQuery();
+
+		if (ret == 0) { return false; }
+		return true;
+	}
 } 
