@@ -14,21 +14,21 @@ namespace library_manager_server.Controllers
 	{
 		public static readonly string SESSION_ID_NAME = "sessionId";
 
-        private LibraryManager libraryManger;
-        private readonly SessionHandler sessionHandler;
-        private readonly ILogger<Account> logger;
+        private readonly LibraryManager _libraryManger;
+        private readonly SessionHandler _sessionHandler;
+        private readonly ILogger<Account> _logger;
 
         public Account(LibraryManager libraryManager, SessionHandler sessionHandler, ILogger<Account> logger) {
-			this.libraryManger = libraryManager;
-            this.sessionHandler = sessionHandler;
-            this.logger = logger;
+			this._libraryManger = libraryManager;
+            this._sessionHandler = sessionHandler;
+            this._logger = logger;
 		}
 
 		[AllowAnonymous]
 		[HttpPost("register")]
 		public async Task<IActionResult> Register(string email, string password, string username)
 		{
-			logger.LogInformation($"regiter of email {email} attempt");
+			_logger.LogInformation($"regiter of email {email} attempt");
 			email = email.Trim();
 			password = password.Trim();	
 			username = username.Trim();
@@ -36,13 +36,13 @@ namespace library_manager_server.Controllers
 			if(!IsValidEmail(email)) { BadRequest("Invalid email"); }
 			if(!IsValidPassword(password)) { BadRequest("Invalid password"); }
 			
-			logger.LogInformation("Register attempted");
-			if (libraryManger.AddUser(email, password, username))
+			_logger.LogInformation("Register attempted");
+			if (_libraryManger.AddUser(email, password, username))
 			{
-				logger.LogInformation($"Register of {email} successfully");
+				_logger.LogInformation($"Register of {email} successfully");
 				return Ok();
 			}
-			logger.LogInformation($"Register failed {email}");
+			_logger.LogInformation($"Register failed {email}");
 			return BadRequest();
 		}
 
@@ -70,16 +70,16 @@ namespace library_manager_server.Controllers
 		[AllowAnonymous]
 		[HttpPost("login")]
 		public async Task<IActionResult> Login(string email, string password) {
-			logger.LogInformation("login attempted");
-			switch (libraryManger.AuthenticateUser(email, password))
+			_logger.LogInformation("login attempted");
+			switch (_libraryManger.AuthenticateUser(email, password))
 			{
 				case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success:
-					logger.LogInformation($"Successfull authenticated user: {email} ");
+					_logger.LogInformation($"Successfull authenticated user: {email} ");
 					Guid guid = Guid.NewGuid();
-					double? userId = libraryManger.GetUserId(email);
+					double? userId = _libraryManger.GetUserId(email);
 					if(userId is not null)
 					{
-						sessionHandler.AddSession(userId.Value, guid);
+						_sessionHandler.AddSession(userId.Value, guid);
 
 						List<Claim> claims = new List<Claim>() {
 							new Claim(SESSION_ID_NAME, guid.ToString()),
@@ -99,7 +99,7 @@ namespace library_manager_server.Controllers
 
 
                 case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed:
-					logger.LogInformation($"Failed to authenticate user: {email}");
+					_logger.LogInformation($"Failed to authenticate user: {email}");
 					return Unauthorized();
 				default: return Unauthorized();
 			}
@@ -108,9 +108,9 @@ namespace library_manager_server.Controllers
 		[HttpPost("logout")]
 		public async Task<IActionResult> Logout()
 		{
-			logger.LogInformation("logout");
+			_logger.LogInformation("logout");
 			string providedSessionId = HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-			if (sessionHandler.RemoveSession(providedSessionId))
+			if (_sessionHandler.RemoveSession(providedSessionId))
 			{
 				await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 				return Ok();

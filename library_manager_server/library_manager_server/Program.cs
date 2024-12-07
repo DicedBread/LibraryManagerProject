@@ -42,7 +42,7 @@ internal class Program
             Password = pass,
         };
 
-        using var dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
+        using NpgsqlDataSource dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
 
 
         builder.Services.AddControllers();

@@ -187,14 +187,35 @@ public class LibraryManager : ILibraryManger{
 		return loans;
 	}
 
+	public Loan? GetLoan(double loanId)
+	{
+		const string loanIdParamName = "loanId";
+		const string query = $@"SELECT loan_id, user_id, isbn, date FROM loans WHERE loan_id = @{loanIdParamName};";
+		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(loanIdParamName, loanId);
+		NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.Read())
+		{
+			Loan loan = new Loan()
+			{
+				Loan_id = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
+				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
+				Date = reader.GetDateTime(reader.GetOrdinal("date"))
+			};
+			return loan;
+		}
+		return null;
+	}
+
 	/// <summary>
 	/// create loan 
 	/// </summary>
 	/// <param name="isbn">loaned book</param>
-	/// <param name="customerId">user id</param>
+	/// <param name="userId">user id</param>
 	/// <param name="date"></param>
 	/// <returns>true if succsessful otherwise false</returns>
-	public bool CreateLoan(string isbn, double customerId, DateTime date)
+	public bool CreateLoan(string isbn, double userId, DateTime date)
 	{
 		const string isbnPN = "isbn", userIdPN = "user_id", datePN = "date"; 
 		const string query = $@"
@@ -203,7 +224,7 @@ public class LibraryManager : ILibraryManger{
 		";
 		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(isbnPN, isbn);
-		cmd.Parameters.AddWithValue(userIdPN, customerId);
+		cmd.Parameters.AddWithValue(userIdPN, userId);
 		cmd.Parameters.AddWithValue(datePN, date);
 		int ret = cmd.ExecuteNonQuery();
 		if (ret == 0) { return false; }
@@ -215,7 +236,7 @@ public class LibraryManager : ILibraryManger{
 	/// </summary>
 	/// <param name="loanId"></param>
 	/// <returns></returns>
-	public bool DeleteLoan(string loanId)
+	public bool DeleteLoan(double loanId)
 	{
 		const string loanIdPn = "loan_id";
 		const string query = $@"DELETE FROM loans WHERE loan_id = @{loanIdPn}"; 
@@ -226,7 +247,7 @@ public class LibraryManager : ILibraryManger{
 		return true;
 	}
 
-	public bool OwnsLoan(double loanId, string userId)
+	public bool OwnsLoan(double loanId, double userId)
 	{
 		const string loanIdPn = "loan_id";
 		const string userIdPn = "user_id";
@@ -240,4 +261,25 @@ public class LibraryManager : ILibraryManger{
 		if (ret == 0) { return false; }
 		return true;
 	}
+	
+	/// <summary>
+	/// is the book with isbn already loaned out
+	/// </summary>
+	/// <param name="isbn"></param>
+	/// <returns></returns>
+	public bool HasActiveLoan(string isbn)
+	{
+		const string isbnPn = "isbn";
+		const string query = $@"SELECT * FROM loans WHERE isbn = @{isbnPn}";
+		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(isbnPn, isbn);
+		NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.HasRows)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	
 } 

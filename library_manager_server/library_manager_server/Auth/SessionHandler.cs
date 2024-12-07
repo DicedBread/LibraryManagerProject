@@ -41,5 +41,14 @@
             logger?.LogInformation($"checking if guid: {id} is active session\t session count: {sessionsCache.Count} \n\t res:{ret}");
             return ret;
         }
+
+        public double? GetUserId(string providedSessionId)
+        {
+            if (sessionsCache.TryGetValue(providedSessionId, out double userId))
+            {
+                return sessionsCache[providedSessionId];
+            }
+            return null;
+        }
     }
 }
