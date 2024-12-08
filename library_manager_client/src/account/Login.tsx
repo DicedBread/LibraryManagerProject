@@ -23,7 +23,7 @@ function Login(){
     } 
 
     return (
-        <form className="loginForm" onSubmit={handleSubmit}>
+        <form className="formBase" onSubmit={handleSubmit}>
             <label htmlFor="username">
                 Username
                 <input 
