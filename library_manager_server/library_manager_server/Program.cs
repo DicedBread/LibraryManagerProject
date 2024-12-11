@@ -51,7 +51,7 @@ internal class Program
         builder.Services.AddSingleton(dataSource);
         builder.Services.AddSingleton<LibraryManager>();
         builder.Services.AddSingleton<SessionHandler>();
-        builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthoriizationHandler>();
+        builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthorizationHandler>();
         builder.Services.AddLogging();
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>

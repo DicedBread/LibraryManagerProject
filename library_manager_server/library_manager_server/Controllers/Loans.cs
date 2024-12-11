@@ -1,4 +1,5 @@
 ﻿
+using System.Security.Claims;
 using library_manager_server.Controllers;
 using library_manager_server.model;
 using Microsoft.AspNetCore.Authorization;
@@ -9,10 +10,10 @@ namespace library_manager_server;
 [Authorize(policy: "ActiveSession")]
 [ApiController]
 [Route("api/[controller]")]
-public class Loans(LibraryManager libraryManager, ILogger<Loans> logger, SessionHandler sessionHandler) : ControllerBase
+public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessionHandler sessionHandler) : ControllerBase
 {
-    private readonly SessionHandler _sessionHandler = sessionHandler;
-    private readonly LibraryManager _libraryManager = libraryManager;
+    private readonly ISessionHandler _sessionHandler = sessionHandler;
+    private readonly ILibraryManager _libraryManager = libraryManager;
     private readonly ILogger<Loans> _logger = logger;
     
     [HttpGet()]
@@ -21,9 +22,11 @@ public class Loans(LibraryManager libraryManager, ILogger<Loans> logger, Session
     public async Task<ActionResult<List<Loan>>> GetLoans()
     {   
         _logger.LogInformation("GetLoans called");
-        string providedSessionId =
-            HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-        double? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
+        Claim? providedSessionIdClaim =
+            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
+        if(providedSessionIdClaim == null) return Unauthorized();
+        string sessionId = providedSessionIdClaim.Value;
+        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
         if(userIdOrnull == null) return Unauthorized();
         double userId = userIdOrnull.Value;
         return _libraryManager.GetLoans(userId);
@@ -35,9 +38,11 @@ public class Loans(LibraryManager libraryManager, ILogger<Loans> logger, Session
     public async Task<ActionResult<Loan>> GetLoan(double loanId)
     {
         _logger.LogInformation("GetLoan called");
-        string providedSessionId =
-            HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-        double? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
+        Claim? providedSessionIdClaim =
+            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
+        if(providedSessionIdClaim == null) return Unauthorized();
+        string sessionId = providedSessionIdClaim.Value;
+        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
         if (userIdOrnull == null){ return Unauthorized(); } 
         double userid = userIdOrnull.Value;
 
@@ -56,9 +61,11 @@ public class Loans(LibraryManager libraryManager, ILogger<Loans> logger, Session
     public async Task<IActionResult> CreateLoan(string isbn)
     {
         _logger.LogInformation("Creating loan {isbn}", isbn);
-        string providedSessionId =
-            HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-        double? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
+        Claim? providedSessionIdClaim =
+            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
+        if(providedSessionIdClaim == null) return Unauthorized();
+        string sessionId = providedSessionIdClaim.Value;
+        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
         if (userIdOrnull == null){ return Unauthorized(); } 
         double userid = userIdOrnull.Value;
         if (_libraryManager.HasActiveLoan(isbn))
@@ -76,12 +83,18 @@ public class Loans(LibraryManager libraryManager, ILogger<Loans> logger, Session
     }
 
     [HttpDelete("loan/{loanId:double}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> DeleteLoans(double loanId)
     {
         _logger.LogInformation("Deleting loan {loanId}", loanId);
-        string providedSessionId =
-            HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-        double? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
+        Claim? providedSessionIdClaim =
+            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
+        if(providedSessionIdClaim == null) return Unauthorized();
+        string sessionId = providedSessionIdClaim.Value;
+        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
         if (userIdOrnull == null){ return Unauthorized(); } 
         double userid = userIdOrnull.Value;
         bool ret = _libraryManager.OwnsLoan(loanId, userid);

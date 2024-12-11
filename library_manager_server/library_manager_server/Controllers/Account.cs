@@ -14,11 +14,11 @@ namespace library_manager_server.Controllers
 	{
 		public static readonly string SESSION_ID_NAME = "sessionId";
 
-        private readonly LibraryManager _libraryManger;
-        private readonly SessionHandler _sessionHandler;
+        private readonly ILibraryManager _libraryManger;
+        private readonly ISessionHandler _sessionHandler;
         private readonly ILogger<Account> _logger;
 
-        public Account(LibraryManager libraryManager, SessionHandler sessionHandler, ILogger<Account> logger) {
+        public Account(ILibraryManager libraryManager, ISessionHandler sessionHandler, ILogger<Account> logger) {
 			this._libraryManger = libraryManager;
             this._sessionHandler = sessionHandler;
             this._logger = logger;
@@ -87,6 +87,7 @@ namespace library_manager_server.Controllers
 
                         ClaimsIdentity claimsIden = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         AuthenticationProperties authProperties = new AuthenticationProperties();
+                        // TODO Configure claims
 
                     await HttpContext.SignInAsync(
                         CookieAuthenticationDefaults.AuthenticationScheme,

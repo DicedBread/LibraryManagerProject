@@ -1,21 +1,22 @@
-using library_manager_server;
 using library_manager_server.model;
 using Microsoft.AspNetCore.Identity;
 using Npgsql;
 
-public class LibraryManager : ILibraryManger{
+namespace library_manager_server;
+
+public class LibraryManager : ILibraryManager
+{
 
 	private readonly NpgsqlDataSource _dataSource;
 
 	//ILogger logger;
-
 
 	// TODO add session cache
 	public LibraryManager(NpgsqlDataSource dataSource)
 	{
 		this._dataSource = dataSource;
 		//this.logger = log;
-    }
+	}
 
 	/// <summary>
 	/// get book within range limit with offset 
@@ -62,29 +63,29 @@ public class LibraryManager : ILibraryManger{
 	/// <returns>book with isbn number or null if not book assosiated</returns>
 	public Book? GetBook(string isbn)
 	{
-        const string query = """
-                             SELECT isbn, title, authour, publisher, img_url FROM books 
-                             NATURAL JOIN authours
-                             NATURAL JOIN publishers
-                             WHERE isbn = @isbn
-                             """;
+		const string query = """
+		                     SELECT isbn, title, authour, publisher, img_url FROM books 
+		                     NATURAL JOIN authours
+		                     NATURAL JOIN publishers
+		                     WHERE isbn = @isbn
+		                     """;
 
-        using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
-        cmd.Parameters.AddWithValue("isbn", isbn);
-        using NpgsqlDataReader reader = cmd.ExecuteReader();
-        if (reader.HasRows)
-        {
-	        Book book = new Book()
-	        {
-		        Id = reader.GetString(0),
-		        Title = reader.GetString(1),
-		        Authour = reader.GetString(2),
-		        Publisher = reader.GetString(3),
-		        ImgUrl = reader.GetString(4),
-	        };
-	        return book;
-        }
-        return null;
+		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue("isbn", isbn);
+		using NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.HasRows)
+		{
+			Book book = new Book()
+			{
+				Id = reader.GetString(0),
+				Title = reader.GetString(1),
+				Authour = reader.GetString(2),
+				Publisher = reader.GetString(3),
+				ImgUrl = reader.GetString(4),
+			};
+			return book;
+		}
+		return null;
 	}
 	/// <summary>
 	/// check if user has entered valid password
@@ -92,8 +93,8 @@ public class LibraryManager : ILibraryManger{
 	/// <param name="email"></param>
 	/// <param name="password"></param>
 	/// <returns>pass or failed</returns>
-    public PasswordVerificationResult AuthenticateUser(string email, string password)
-    {
+	public PasswordVerificationResult AuthenticateUser(string email, string password)
+	{
 		//if(email == "test" || password == "test") return PasswordVerificationResult.Success;
 
 		PasswordHasher<string> ph = new PasswordHasher<string>();
@@ -108,11 +109,11 @@ public class LibraryManager : ILibraryManger{
 			if (reader.Read())
 			{
 				string hashedPswd = reader.GetString(0);
-                return ph.VerifyHashedPassword(email, hashedPswd, password);
-            }
+				return ph.VerifyHashedPassword(email, hashedPswd, password);
+			}
 		}
 		return PasswordVerificationResult.Failed;
-    }
+	}
 
 	/// <summary>
 	/// inserts new user into the db
@@ -141,7 +142,7 @@ public class LibraryManager : ILibraryManger{
 		{
 			return true;
 		}
-        return false;
+		return false;
 	}
 
 	public double? GetUserId(string email)
@@ -179,7 +180,7 @@ public class LibraryManager : ILibraryManger{
 			{
 				Loan_id = reader.GetInt32(reader.GetOrdinal("loan_id")),
 				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
-				User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
+				// User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
 				Date = reader.GetDateTime(reader.GetOrdinal("date")),
 			};
 			loans.Add(loan);
@@ -199,7 +200,7 @@ public class LibraryManager : ILibraryManger{
 			Loan loan = new Loan()
 			{
 				Loan_id = reader.GetInt32(reader.GetOrdinal("loan_id")),
-				User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
+				// User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
 				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
 				Date = reader.GetDateTime(reader.GetOrdinal("date"))
 			};
@@ -251,7 +252,7 @@ public class LibraryManager : ILibraryManger{
 	{
 		const string loanIdPn = "loan_id";
 		const string userIdPn = "user_id";
-		const string query = $@"SElECT loanId, userId FROM loans WHERE loan_id = @{loanIdPn} AND user_id = @{userIdPn}";
+		const string query = $@"SElECT loan_id, user_id FROM loans WHERE loan_id = @{loanIdPn} AND user_id = @{userIdPn}";
 		
 		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(loanIdPn, loanId);
@@ -280,6 +281,4 @@ public class LibraryManager : ILibraryManger{
 		}
 		return false;
 	}
-	
-	
-} 
+}

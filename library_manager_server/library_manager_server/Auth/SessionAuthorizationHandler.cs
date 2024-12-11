@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace library_manager_server
 {
-    public class SessionAuthoriizationHandler : AuthorizationHandler<ActiveSessionRequirement>
+    public class SessionAuthorizationHandler : AuthorizationHandler<ActiveSessionRequirement>
     {
-        SessionHandler sessionHandler;
-        public SessionAuthoriizationHandler(SessionHandler sessionHandler) => this.sessionHandler = sessionHandler;
+        private readonly ISessionHandler _sessionHandler;
+        public SessionAuthorizationHandler(ISessionHandler sessionHandler) => this._sessionHandler = sessionHandler;
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ActiveSessionRequirement requirement)
         {
@@ -15,7 +15,7 @@ namespace library_manager_server
             if (context.User.HasClaim(c => c.Type == Account.SESSION_ID_NAME))
             {
                 string providedSessionId = context.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-                if (sessionHandler.IsActiveSessionId(providedSessionId))
+                if (_sessionHandler.IsActiveSessionId(providedSessionId))
                 {
                     context.Succeed(requirement);
                     return Task.CompletedTask;

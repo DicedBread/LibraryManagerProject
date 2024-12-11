@@ -1,8 +1,12 @@
-﻿namespace library_manager_server
+﻿using System.Security.Claims;
+
+namespace library_manager_server
 {
-    public class SessionHandler
+    public class SessionHandler : ISessionHandler
     {
-        Dictionary<String, double> sessionsCache = new Dictionary<String, double>();
+
+        
+        Dictionary<string, double> sessionsCache = new Dictionary<string, double>();
         private readonly ILogger<SessionHandler>? logger;
 
         public SessionHandler() { }
@@ -50,5 +54,10 @@
             }
             return null;
         }
+
+        // public string? GetSessionId(HttpContext context)
+        // {
+        //     Claim claim = context.User.FindFirst(c => c.Type == SessionHandler.);
+        // }
     }
 }
