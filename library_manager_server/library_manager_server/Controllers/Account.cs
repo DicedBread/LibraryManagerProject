@@ -12,7 +12,7 @@ namespace library_manager_server.Controllers
     [Route("api/[controller]")]
     public class Account : ControllerBase
 	{
-		public static readonly string SESSION_ID_NAME = "sessionId";
+		// public static readonly string SESSION_ID_NAME = "sessionId";
 
         private readonly ILibraryManager _libraryManger;
         private readonly ISessionHandler _sessionHandler;
@@ -75,16 +75,14 @@ namespace library_manager_server.Controllers
 			{
 				case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success:
 					_logger.LogInformation($"Successfull authenticated user: {email} ");
-					Guid guid = Guid.NewGuid();
 					double? userId = _libraryManger.GetUserId(email);
 					if(userId is not null)
 					{
-						_sessionHandler.AddSession(userId.Value, guid);
-
+						Guid id = _sessionHandler.CreateSession(userId.Value);
 						List<Claim> claims = new List<Claim>() {
-							new Claim(SESSION_ID_NAME, guid.ToString()),
+							new Claim(_sessionHandler.ClaimName, id.ToString()),
 						};
-
+						
                         ClaimsIdentity claimsIden = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         AuthenticationProperties authProperties = new AuthenticationProperties();
                         // TODO Configure claims
@@ -110,8 +108,8 @@ namespace library_manager_server.Controllers
 		public async Task<IActionResult> Logout()
 		{
 			_logger.LogInformation("logout");
-			string providedSessionId = HttpContext.User.Claims.First(c => c.Type == Account.SESSION_ID_NAME).Value.ToString();
-			if (_sessionHandler.RemoveSession(providedSessionId))
+			string providedSessionId = HttpContext.User.Claims.First(c => c.Type == _sessionHandler.ClaimName).Value.ToString();
+			if (_sessionHandler.KillSession(providedSessionId))
 			{
 				await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 				return Ok();

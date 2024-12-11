@@ -22,14 +22,11 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     public async Task<ActionResult<List<Loan>>> GetLoans()
     {   
         _logger.LogInformation("GetLoans called");
-        Claim? providedSessionIdClaim =
-            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
-        if(providedSessionIdClaim == null) return Unauthorized();
-        string sessionId = providedSessionIdClaim.Value;
-        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
-        if(userIdOrnull == null) return Unauthorized();
-        double userId = userIdOrnull.Value;
-        return _libraryManager.GetLoans(userId);
+        string? sessionId = _sessionHandler.GetSession(HttpContext);
+        if(sessionId == null) return Unauthorized();
+        double? userId = _sessionHandler.GetUserId(sessionId);
+        if(userId == null) return Unauthorized();
+        return _libraryManager.GetLoans(userId.Value);
     }
     
     [HttpGet("{loanId:double}")]
@@ -38,18 +35,25 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     public async Task<ActionResult<Loan>> GetLoan(double loanId)
     {
         _logger.LogInformation("GetLoan called");
-        Claim? providedSessionIdClaim =
-            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
-        if(providedSessionIdClaim == null) return Unauthorized();
-        string sessionId = providedSessionIdClaim.Value;
-        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
-        if (userIdOrnull == null){ return Unauthorized(); } 
-        double userid = userIdOrnull.Value;
-
-        if(!_libraryManager.OwnsLoan(userid, loanId)) return Forbid();
-        
+        string? providedSessionId = _sessionHandler.GetSession(HttpContext);
+        if (providedSessionId == null)
+        {
+            _logger.LogDebug("No session found");
+            return Unauthorized();
+        }
+        double? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
+        if (userIdOrnull == null)
+        {
+            _logger.LogDebug("No user associated with this session");
+            return Unauthorized();
+        } 
+        if(!_libraryManager.OwnsLoan(userIdOrnull.Value, loanId)) return Forbid();
         Loan? loan = _libraryManager.GetLoan(loanId);
-        if(loan == null) return BadRequest();
+        if (loan == null)
+        {
+            _logger.LogDebug("No loan associated with this loanId");
+            return BadRequest();
+        }
         return loan;
     }
 
@@ -61,10 +65,8 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     public async Task<IActionResult> CreateLoan(string isbn)
     {
         _logger.LogInformation("Creating loan {isbn}", isbn);
-        Claim? providedSessionIdClaim =
-            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
-        if(providedSessionIdClaim == null) return Unauthorized();
-        string sessionId = providedSessionIdClaim.Value;
+        string? sessionId = _sessionHandler.GetSession(HttpContext);
+        if(sessionId == null) return Unauthorized();
         double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
         if (userIdOrnull == null){ return Unauthorized(); } 
         double userid = userIdOrnull.Value;
@@ -90,14 +92,11 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     public async Task<IActionResult> DeleteLoans(double loanId)
     {
         _logger.LogInformation("Deleting loan {loanId}", loanId);
-        Claim? providedSessionIdClaim =
-            HttpContext.User.Claims.FirstOrDefault(claim => claim.Type == Account.SESSION_ID_NAME);
-        if(providedSessionIdClaim == null) return Unauthorized();
-        string sessionId = providedSessionIdClaim.Value;
-        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
-        if (userIdOrnull == null){ return Unauthorized(); } 
-        double userid = userIdOrnull.Value;
-        bool ret = _libraryManager.OwnsLoan(loanId, userid);
+        string? sessionId = _sessionHandler.GetSession(HttpContext);
+        if(sessionId == null) return Unauthorized();
+        double? userId = _sessionHandler.GetUserId(sessionId);
+        if (userId == null){ return Unauthorized(); } 
+        bool ret = _libraryManager.OwnsLoan(loanId, userId.Value);
         if(ret == false) return Forbid();
         bool didDelete = _libraryManager.DeleteLoan(loanId);
         if(!didDelete) return BadRequest();

@@ -4,23 +4,32 @@ namespace library_manager_server
 {
     public class SessionHandler : ISessionHandler
     {
+        public string ClaimName { get; } = "sessionId";
 
-        
-        Dictionary<string, double> sessionsCache = new Dictionary<string, double>();
-        private readonly ILogger<SessionHandler>? logger;
+
+        private readonly Dictionary<string, double> _sessionsCache = new Dictionary<string, double>();
+        private readonly ILogger<SessionHandler>? _logger;
 
         public SessionHandler() { }
-        public SessionHandler(ILogger<SessionHandler> logger) => this.logger = logger;
+        public SessionHandler(ILogger<SessionHandler> logger) => this._logger = logger;
 
         /// <summary>
         /// add a session to local cache
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="guid"></param>
-        public void AddSession(double userId, Guid guid)
+        private void AddSession(double userId, Guid guid)
         {
-            logger?.LogInformation($"new session added userId:{userId} guid:{guid}");
-            sessionsCache.Add(guid.ToString(), userId);
+            _logger?.LogInformation($"new session added userId:{userId} guid:{guid}");
+            _sessionsCache.Add(guid.ToString(), userId);
+        }
+
+
+        public Guid CreateSession(double userId)
+        {   
+            Guid guid = Guid.NewGuid();
+            AddSession(userId, guid);
+            return guid;
         }
 
         /// <summary>
@@ -28,10 +37,10 @@ namespace library_manager_server
         /// </summary>
         /// <param name="guid"></param>
         // <returns>true if session removed false if guid not found</returns>
-        public bool RemoveSession(string guid)
+        public bool KillSession(string guid)
         {
-            logger?.LogInformation($"removing session {guid}");
-            return sessionsCache.Remove(guid);
+            _logger?.LogInformation($"removing session {guid}");
+            return _sessionsCache.Remove(guid);
         }
         
         /// <summary>
@@ -39,25 +48,28 @@ namespace library_manager_server
         /// </summary>
         /// <param name="id"></param>
         /// <returns>true if id is a active session id</returns>
-        public bool IsActiveSessionId(string id)
+        public bool IsActiveSession(string id)
         {
-            bool ret = sessionsCache.ContainsKey(id.ToString());
-            logger?.LogInformation($"checking if guid: {id} is active session\t session count: {sessionsCache.Count} \n\t res:{ret}");
+            bool ret = _sessionsCache.ContainsKey(id.ToString());
+            _logger?.LogInformation($"checking if guid: {id} is active session\t session count: {_sessionsCache.Count} \n\t res:{ret}");
             return ret;
         }
 
+
         public double? GetUserId(string providedSessionId)
         {
-            if (sessionsCache.TryGetValue(providedSessionId, out double userId))
+            if (_sessionsCache.TryGetValue(providedSessionId, out double userId))
             {
-                return sessionsCache[providedSessionId];
+                return _sessionsCache[providedSessionId];
             }
             return null;
         }
+        
+        public string? GetSession(HttpContext httpContext)
+        {
+            Claim? sessionId = httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimName);
+            return sessionId?.Value;
+        }
 
-        // public string? GetSessionId(HttpContext context)
-        // {
-        //     Claim claim = context.User.FindFirst(c => c.Type == SessionHandler.);
-        // }
     }
 }
