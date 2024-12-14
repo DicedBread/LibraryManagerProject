@@ -49,8 +49,8 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddSingleton(dataSource);
-        builder.Services.AddSingleton<LibraryManager>();
-        builder.Services.AddSingleton<SessionHandler>();
+        builder.Services.AddSingleton<ILibraryManager, LibraryManager>();
+        builder.Services.AddSingleton<ISessionHandler, SessionHandler>();
         builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthorizationHandler>();
         builder.Services.AddLogging();
 

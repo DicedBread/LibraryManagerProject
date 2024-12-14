@@ -8,9 +8,9 @@ namespace library_manager_server.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private LibraryManager _libraryManager;
+        private readonly ILibraryManager _libraryManager;
 
-        public BooksController(LibraryManager libraryManager) => this._libraryManager = libraryManager;
+        public BooksController(ILibraryManager libraryManager) => this._libraryManager = libraryManager;
 
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
