@@ -3,6 +3,7 @@ using System.Security.Claims;
 using library_manager_server.Controllers;
 using library_manager_server.model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace library_manager_server;
@@ -12,6 +13,8 @@ namespace library_manager_server;
 [Route("api/[controller]")]
 public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessionHandler sessionHandler) : ControllerBase
 {
+    private const string GetLoanName = "getLoan";
+    
     private readonly ISessionHandler _sessionHandler = sessionHandler;
     private readonly ILibraryManager _libraryManager = libraryManager;
     private readonly ILogger<Loans> _logger = logger;
@@ -29,7 +32,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
         return _libraryManager.GetLoans(userId.Value);
     }
     
-    [HttpGet("{loanId:double}")]
+    [HttpGet("{loanId:double}", Name = GetLoanName),]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Loan>> GetLoan(double loanId)
@@ -75,11 +78,13 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
             _logger.LogInformation($"Loan {isbn} already active");
             return Forbid();
         }
-        bool loanCreated = _libraryManager.CreateLoan(isbn, userid, DateTime.Now);
-        if (loanCreated)
+
+        Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateTime.Now);
+        if (loan != null)
         {
             _logger.LogInformation($"Created loan {isbn}");
-            return Created();
+            string? r = Url.Link(GetLoanName, new { loanId = loan.LoanId });
+            return Created(r, loan);
         }
         return BadRequest();
     }

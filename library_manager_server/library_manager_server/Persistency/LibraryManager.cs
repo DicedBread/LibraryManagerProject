@@ -178,9 +178,9 @@ public class LibraryManager : ILibraryManager
 		{
 			Loan loan = new Loan()
 			{
-				Loan_id = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				LoanId = reader.GetInt32(reader.GetOrdinal("loan_id")),
 				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
-				// User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
+				UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
 				Date = reader.GetDateTime(reader.GetOrdinal("date")),
 			};
 			loans.Add(loan);
@@ -199,8 +199,8 @@ public class LibraryManager : ILibraryManager
 		{
 			Loan loan = new Loan()
 			{
-				Loan_id = reader.GetInt32(reader.GetOrdinal("loan_id")),
-				// User_id = reader.GetInt32(reader.GetOrdinal("user_id")),
+				LoanId = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
 				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
 				Date = reader.GetDateTime(reader.GetOrdinal("date"))
 			};
@@ -214,22 +214,34 @@ public class LibraryManager : ILibraryManager
 	/// </summary>
 	/// <param name="isbn">loaned book</param>
 	/// <param name="userId">user id</param>
-	/// <param name="date"></param>
-	/// <returns>true if succsessful otherwise false</returns>
-	public bool CreateLoan(string isbn, double userId, DateTime date)
+	/// <param name="date">date of creation</param>
+	/// <returns>returns loan if create otherwise null</returns>
+	public Loan? CreateLoan(string isbn, double userId, DateTime date)
 	{
 		const string isbnPN = "isbn", userIdPN = "user_id", datePN = "date"; 
 		const string query = $@"
 			INSERT INTO loans (isbn, user_id, date)
-			VALUES (@{isbnPN}, @{userIdPN}, @{datePN});
+			VALUES (@{isbnPN}, @{userIdPN}, @{datePN})
+			RETURNING loan_id, isbn, user_id, date;
 		";
 		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(isbnPN, isbn);
 		cmd.Parameters.AddWithValue(userIdPN, userId);
 		cmd.Parameters.AddWithValue(datePN, date);
-		int ret = cmd.ExecuteNonQuery();
-		if (ret == 0) { return false; }
-		return true;
+		
+		NpgsqlDataReader reader = cmd.ExecuteReader();
+		if (reader.Read())
+		{
+			Loan loan = new Loan()
+			{
+				LoanId = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
+				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
+				Date = reader.GetDateTime(reader.GetOrdinal("date"))
+			};
+			return loan;
+		}
+		return null;
 	}
 
 	/// <summary>

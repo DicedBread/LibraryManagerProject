@@ -48,7 +48,16 @@ public interface ILibraryManager
     /// <param name="userId">user id</param>
     /// <param name="date"></param>
     /// <returns>true if succsessful otherwise false</returns>
-    bool CreateLoan(string isbn, double userId, DateTime date);
+    // bool CreateLoan(string isbn, double userId, DateTime date);
+    
+    /// <summary>
+    /// create loan 
+    /// </summary>
+    /// <param name="isbn">loaned book</param>
+    /// <param name="userId">user id</param>
+    /// <param name="date">date of creation</param>
+    /// <returns>loan if succsessful otherwise null</returns>
+    Loan? CreateLoan(string isbn, double userId, DateTime date);
 
     /// <summary>
     /// 
