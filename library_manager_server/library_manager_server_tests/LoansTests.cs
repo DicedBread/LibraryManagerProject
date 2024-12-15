@@ -168,5 +168,17 @@ public class LoansTests
         Assert.That(returnValue.StatusCode, Is.EqualTo((int) HttpStatusCode.Unauthorized));
     }
 
-
+    [Test]
+    public async Task CreateLoan_Valid()
+    {
+        Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
+        controller.ControllerContext = _controllerContext;
+        IActionResult ret = await controller.CreateLoan(TestBookISBN);
+        
+        CreatedResult? Result = ret as CreatedResult;      
+        
+        Assert.True(false);
+        // Assert.IsNotNull(Result);
+        // Assert.That(Result.StatusCode, Is.EqualTo((int) HttpStatusCode.Created));
+    }
 }
