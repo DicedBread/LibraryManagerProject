@@ -15,9 +15,9 @@ function FormElement<T extends string | number>({name, value, type, onChange}: F
             {name}
             <br />
             <input
-                type="email"
-                name="email"
-                id="email"
+                type={type}
+                name={name}
+                id={name}
                 value={value}
                 onChange={onChange}
             />

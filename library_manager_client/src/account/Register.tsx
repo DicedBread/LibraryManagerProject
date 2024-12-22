@@ -15,23 +15,26 @@ function Register() {
 
     const handleSubmit = () => {
         alert(`register with values:
-             ${inputs?.email}
+            ${inputs?.email}
         `);
     }
 
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const target = event.target as typeof event.target & {
-            value: Register
-        }
-        const email = target.value.email;
-        const fName = target.value.fName;
-        const lName = target.value.lName;
-        const password = target.value.password;
-        
+        // const target = event.target as typeof event.target & {
+        //     value: Register
+        // }
+        // const email = target.value.email;
+        // const fName = target.value.fName;
+        // const lName = target.value.lName;
+        // const password = target.value.password;
+        // setInputs(target.value => ({...target.value, [name]: value}));
+
+        const {name, value} = event.currentTarget;
+        // setInputs({[name]: value } as Pick<Register, keyof Register>);
     }
 
     return (
-        <form onSubmit={handleSubmit} className="register">
+        <form onSubmit={handleSubmit} className="formBase">
             <br />
             <FormElement<string> 
                 name="Email"

@@ -8,9 +8,9 @@ import Register from './account/Register';
 function App() {
   return (
     <div className="App">
-      <Header/>
-      {/* <Login /> */}
-      <Register />
+      <Header />
+      <Login />
+      {/* <Register /> */}
       {/* <BookContent/> */}
     </div>
   );
