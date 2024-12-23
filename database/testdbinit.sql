@@ -260,6 +260,8 @@ COPY public.books (isbn, title, img_url, authour_id, publisher_id) FROM stdin;
 --
 
 COPY public.loans (loan_id, user_id, isbn, date) FROM stdin;
+1	1	0060973129	2024-12-23
+2	1	0393045218	2024-12-23
 \.
 
 
@@ -296,6 +298,8 @@ COPY public.publishers (publisher_id, publisher) FROM stdin;
 --
 
 COPY public.users (user_id, email, username, password) FROM stdin;
+1	test@test	test	AQAAAAIAAYagAAAAEIgJya5EiBidQjAtn07PZk8mJOUa6RN32aCyFkJQdjusuqjQs4hzFAKtDtYJZzCKOw==
+2	test2@test	test2	AQAAAAIAAYagAAAAEEm2doi8/1UlMGigET0GpoyrDqJt2AfD2DJbf7Jsjrfi0JpomGXndUqnZcNDp+Rb+g==
 \.
 
 
@@ -310,7 +314,7 @@ SELECT pg_catalog.setval('public.authours_authour_id_seq', 20, true);
 -- Name: loans_loan_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.loans_loan_id_seq1', 1, false);
+SELECT pg_catalog.setval('public.loans_loan_id_seq1', 2, true);
 
 
 --
@@ -324,7 +328,7 @@ SELECT pg_catalog.setval('public.publishers_publisher_id_seq', 20, true);
 -- Name: users_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.users_user_id_seq', 1, false);
+SELECT pg_catalog.setval('public.users_user_id_seq', 2, true);
 
 
 --
