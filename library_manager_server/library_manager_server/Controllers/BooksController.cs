@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using library_manager_server.model;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace library_manager_server.Controllers
@@ -7,33 +8,27 @@ namespace library_manager_server.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private LibrayManager LibrayManager;
+        private readonly ILibraryManager _libraryManager;
 
-        public BooksController(LibrayManager libraryManager)
-        {
-            LibrayManager = libraryManager;
-        }
-
-        // [HttpGet("/allbooks")]
-        // public IEnumerable<Book> GetAllBooks()
-        // {
-        //     List<Book> output = LibrayManager.GetBooks();
-        //     return output.ToArray();
-        // }
+        public BooksController(ILibraryManager libraryManager) => this._libraryManager = libraryManager;
 
         [HttpGet()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<IEnumerable<Book>> GetBooks([FromQuery] int limit,[FromQuery] int offset)
         {
             if (limit <= 0 || offset < 0) return BadRequest();
-            List<Book> books = LibrayManager.GetBooks(limit, offset);
+            List<Book> books = _libraryManager.GetBooks(limit, offset);
             return books.ToArray();
         }
-
         
         [HttpGet("{isbn}")]
-        public ActionResult<Book> GetBook(int isbn)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+        public ActionResult<Book> GetBook(string isbn)
         {
-            Book? book = LibrayManager.GetBook(isbn);
+            Book? book = _libraryManager.GetBook(isbn);
             if(book == null) return NotFound();
             return book;
         }

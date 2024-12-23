@@ -1,10 +1,26 @@
+using library_manager_server;
+using library_manager_server.Controllers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Npgsql;
+using System.Diagnostics.Eventing.Reader;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+        var LocalhostHttp = "_LocalhostHttp";
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: LocalhostHttp,
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
+                });
+        });
 
         string? user = builder.Configuration["library:testuser"];
         string? pass = builder.Configuration["library:testPassword"];
@@ -26,30 +42,65 @@ internal class Program
             Password = pass,
         };
 
-        using var dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
-        LibrayManager lm = new LibrayManager(dataSource);
+        using NpgsqlDataSource dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
+
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddSingleton(lm);
-        //builder.Services.AddTransient<LibrayManager, LibrayManager>();
+        builder.Services.AddSingleton(dataSource);
+        builder.Services.AddSingleton<ILibraryManager, LibraryManager>();
+        builder.Services.AddSingleton<ISessionHandler, SessionHandler>();
+        builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthorizationHandler>();
+        builder.Services.AddLogging();
+
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+        {
+            // prevent rederect to login/AccessDenied and just returns error codes
+            options.Events = new CookieAuthenticationEvents()
+            {
+                OnRedirectToLogin = (ctx) =>
+                {
+                    if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                    {
+                        ctx.Response.StatusCode = 401;
+                    }
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = (ctx) =>
+                {
+                    if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+                    {
+                        ctx.Response.StatusCode = 403;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
+        });
+
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ActiveSession", p =>
+                p.Requirements.Add(new ActiveSessionRequirement())
+            );
+        });
+
 
         builder.Logging.AddConsole();
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors(LocalhostHttp);
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
-
+        app.UseAuthentication();
         app.UseAuthorization();
-
         app.MapControllers();
 
 
