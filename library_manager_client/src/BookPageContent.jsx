@@ -6,14 +6,14 @@ function BookContent() {
     const [books, setBooks] = useState([]);
 
     useEffect(() => {
-        fetch("http://localhost:5255/api/Books?limit=3&offset=0")
+        fetch("https://localhost:7291/api/Books?limit=20&offset=0")
             .then((res) => {return res.json();})
             .then((data) => {setBooks(data);})
             .catch((err) => {console.log("failed to access books ", err)});
     }, []);
 
     return (
-        <div className="BookContent">
+        <div className="bookContent">
             {books.length !== 0 ? (
                 books.map((book) => {
                     return <BookModule book={book} />;
@@ -28,9 +28,15 @@ function BookContent() {
 function BookModule({book}){
     return (
         <div className="bookModule">
-            <img src={book.imgUrl} alt={book.title + " book image"} />
+            <div className="bookImg">
+                <img src={book.imgUrl} alt={book.title + " book image"} />
+            </div>
             <div>
-                <p>Title: {book.title}</p>
+                <h4>Title:</h4>
+                <p>{book.title}</p>
+                <br />
+                <h5>Authour:</h5>
+                <p>{book.authour}</p>
             </div>
         </div>
     )

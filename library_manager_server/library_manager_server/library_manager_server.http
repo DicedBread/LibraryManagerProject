@@ -1,6 +1,10 @@
-@library_manager_server_HostAddress = http://localhost:5255
-
-GET {{library_manager_server_HostAddress}}/weatherforecast/
-Accept: application/json
+@library_manager_server_HostAddress = https://localhost:44398
 
 ###
+GET {{library_manager_server_HostAddress}}/api/Books?limit=5&offset=1
+
+> {% 
+    client.test("Req success", function () {
+        client.assert(response.status == 401, "");
+    })
+ %}
