@@ -12,6 +12,16 @@ internal class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+        var LocalhostHttp = "_LocalhostHttp";
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: LocalhostHttp,
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
+                });
+        });
+
         string? user = builder.Configuration["library:dbUser"];
         string? pass = builder.Configuration["library:dbPassword"];
         string? address = builder.Configuration["library:dbAddress"];
@@ -84,6 +94,7 @@ internal class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors(LocalhostHttp);
             app.UseSwagger();
             app.UseSwaggerUI();
         }
