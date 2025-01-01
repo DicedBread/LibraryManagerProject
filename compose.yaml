@@ -1,0 +1,33 @@
+# .env vars needed
+# TEST_PASSWORD= database password
+# HOST_CERT_PATH= path to folder containing self signed cert in hosting machine 
+# CONT_CERT_PATH= path to cert file on container 
+# CERT_PASSWORD= password used to create cert file 
+
+services:
+  db:
+    container_name: library_manager_database
+    build: database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=library 
+      
+  backend:
+    container_name: library_manager_backend
+    build: library_manager_server
+    ports:
+      - 8080:8080
+    environment:
+      - library__dbUser=postgres
+      - library__dbPassword=${DB_PASSWORD}
+      - library__dbAddress=db
+      - library__dbPort=5432
+      - library__database=library
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:8080;
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${CONT_CERT_PATH}
+    volumes:
+      - "${HOST_CERT_PATH}:/https:ro"

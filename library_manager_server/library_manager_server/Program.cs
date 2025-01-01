@@ -12,25 +12,16 @@ internal class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        var LocalhostHttp = "_LocalhostHttp";
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy(name: LocalhostHttp,
-                policy =>
-                {
-                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
-                });
-        });
-
-        string? user = builder.Configuration["library:testuser"];
-        string? pass = builder.Configuration["library:testPassword"];
-        string? address = builder.Configuration["library:address"];
-        string? port = builder.Configuration["library:port"];
+        string? user = builder.Configuration["library:dbUser"];
+        string? pass = builder.Configuration["library:dbPassword"];
+        string? address = builder.Configuration["library:dbAddress"];
+        string? port = builder.Configuration["library:dbPort"];
         string? database = builder.Configuration["library:database"];
-
+        
         if (user == null || pass == null || address == null || port == null)
         {
             Console.WriteLine("missing database info");
+            return;
         }
 
         var conStrB = new Npgsql.NpgsqlConnectionStringBuilder()
@@ -43,7 +34,7 @@ internal class Program
         };
 
         using NpgsqlDataSource dataSource = NpgsqlDataSource.Create(conStrB.ConnectionString);
-
+        
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -93,7 +84,6 @@ internal class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseCors(LocalhostHttp);
             app.UseSwagger();
             app.UseSwaggerUI();
         }

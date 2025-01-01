@@ -12,6 +12,11 @@
   margin: auto 0;
 }
 
+.loginForm{
+  display: flex;
+  flex-direction: column;
+}
+  
 .bookContent{
   display: flex;
   flex-wrap: wrap;

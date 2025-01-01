@@ -1,3 +1,4 @@
+import React from "react";
 import "./style/App.css";
 import { useState, useEffect } from "react";
 
