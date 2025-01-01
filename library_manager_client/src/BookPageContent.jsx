@@ -6,7 +6,8 @@ function BookContent() {
     const [books, setBooks] = useState([]);
 
     useEffect(() => {
-        fetch("https://localhost:7291/api/Books?limit=20&offset=0")
+        var url = "https://" + process.env.REACT_APP_SERVER_URL + "/api/Books?limit=20&offset=0"
+        fetch(url)
             .then((res) => {return res.json();})
             .then((data) => {setBooks(data);})
             .catch((err) => {console.log("failed to access books ", err)});
