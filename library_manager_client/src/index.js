@@ -4,7 +4,13 @@ import './style/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
+if(process.env.REACT_APP_SERVER_URL == null) {
+  console.log("api domain env varible (REACT_APP_SERVER_URL) undefined");
+  process.exit();
+}
+
 root.render(
   <React.StrictMode>
     <App />

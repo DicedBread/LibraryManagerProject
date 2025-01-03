@@ -1,35 +1,47 @@
 import React, { ChangeEvent, HtmlHTMLAttributes, useState } from "react";
 import "../style/App.css"
 
-interface login{
-    username : string;
+interface Login{
+    email : string;
     password : string;
 }
 
 function Login(){
-    const [inputs, setInputs] = useState<login>();
+    const [inputs, setInputs] = useState<Login>({ email: "", password: "" });
     
     const handleSubmit = () => {
-        alert("name entered " + inputs?.username);
+        // let url : string = process.env.REACT_APP_SERVER_URL + "/api/login'"  
+        // fetch(url, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'email': inputs.email,
+        //         'password': inputs.password,
+        //     }
+        // })
+        // .then(response => response.json())
+        // .then(data => {
+        //     console.log('Success:', data);
+        // })
+        // .catch((error) => {
+        //     console.error('Error:', error);
+        // });
     }
 
     const handleChange = (event : ChangeEvent<HTMLInputElement>) => {
-        // const valueTarget = event.target  
-        // const name = valueTarget.name;
-        // const value = valueTarget.value;
-        // setInputs(valueTarget => ({...valueTarget, [name]: value}));
-        const {name, value} = event.currentTarget;
-        setInputs({[name]: value } as Pick<login, keyof login>);
+        const {name, value} = event.target
+        setInputs(prevInputs => ({...prevInputs, [name]: value}));
     } 
 
     return (
-        <form className="formBase" onSubmit={handleSubmit}>
-            <label htmlFor="username">
+        <div className="formBase">
+        <form className="" onSubmit={handleSubmit}>
+            <label htmlFor="email">
                 Username
                 <input 
                     type="text" 
-                    name="username"
-                    value={inputs?.username || ""}
+                    name="email"
+                    value={inputs?.email || ""}
                     onChange={handleChange}
                 />
             </label>
@@ -45,6 +57,7 @@ function Login(){
             </label>
             <button type="submit">Login</button>
         </form>
+        </div>
     );
 }
 

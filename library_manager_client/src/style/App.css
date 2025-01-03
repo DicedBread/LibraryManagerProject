@@ -1,3 +1,14 @@
+body{
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+#root{
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
 .header{
   background-color: rgb(190, 182, 145);
@@ -31,8 +42,7 @@
   border-radius: 5px;
   width: 20vw;
   height: auto;
-  /* min-width: 100px; */
-  /* max-width: 200px; */
+
 }
 
 .bookModule p{

@@ -10,20 +10,14 @@ import Register from './account/Register';
 function App() {
   return (
     <BrowserRouter>
+    <Header />
       <Routes>
-        <Route path='/' element={<Index />} />
+        <Route path='/' element={<BookContent />} />
+        <Route path='/login' element={<Login />}/>
       </Routes>
     </BrowserRouter>
   );
 }
 
-function Index(){
-  return (
-    <div className='app'>
-      <Header />
-      <BookContent />
-    </div>
-  );
-}
 
 export default App;
