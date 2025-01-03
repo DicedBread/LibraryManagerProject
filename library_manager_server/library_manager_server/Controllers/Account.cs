@@ -26,7 +26,7 @@ namespace library_manager_server.Controllers
 
 		[AllowAnonymous]
 		[HttpPost("register")]
-		public async Task<IActionResult> Register(string email, string password, string username)
+		public async Task<IActionResult> Register([FromHeader] string email, [FromHeader] string password, [FromHeader] string username)
 		{
 			_logger.LogInformation($"regiter of email {email} attempt");
 			email = email.Trim();
@@ -69,7 +69,7 @@ namespace library_manager_server.Controllers
 
 		[AllowAnonymous]
 		[HttpPost("login")]
-		public async Task<IActionResult> Login(string email, string password) {
+		public async Task<IActionResult> Login([FromHeader] string email, [FromHeader] string password) {
 			_logger.LogInformation("login attempted");
 			switch (_libraryManger.AuthenticateUser(email, password))
 			{
@@ -115,13 +115,6 @@ namespace library_manager_server.Controllers
 				return Ok();
 			};
 			return BadRequest();
-		}
-
-		[Authorize(Policy = "ActiveSession")]
-		[HttpGet("test")]
-		public async Task<string> test()
-		{
-			return "hello world";
 		}
 	}
 }
