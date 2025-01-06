@@ -1,5 +1,7 @@
 import React, { ChangeEvent, HtmlHTMLAttributes, useState } from "react";
 import "../style/App.css"
+import "../style/Form.css"
+
 
 interface Login{
     email : string;
