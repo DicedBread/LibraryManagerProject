@@ -18,7 +18,10 @@ internal class Program
             options.AddPolicy(name: LocalhostHttp,
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000");
+                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
         });
 
@@ -77,6 +80,8 @@ internal class Program
                     return Task.CompletedTask;
                 }
             };
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
 
         builder.Services.AddAuthorization(options =>

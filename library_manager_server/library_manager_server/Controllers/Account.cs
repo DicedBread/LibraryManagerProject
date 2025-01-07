@@ -84,7 +84,10 @@ namespace library_manager_server.Controllers
 						};
 						
                         ClaimsIdentity claimsIden = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                        AuthenticationProperties authProperties = new AuthenticationProperties();
+                        AuthenticationProperties authProperties = new AuthenticationProperties()
+                        {
+	                        
+                        };
                         // TODO Configure claims
 
                     await HttpContext.SignInAsync(
