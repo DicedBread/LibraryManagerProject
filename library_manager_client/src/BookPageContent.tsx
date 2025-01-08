@@ -2,11 +2,19 @@ import React from "react";
 import "./style/App.css";
 import { useState, useEffect } from "react";
 
+interface Book{
+    id:string,
+    title:string,
+    authour:string,
+    publisher:string,
+    imgUrl:string
+}
+
 function BookContent() {
-    const [books, setBooks] = useState([]);
+    const [books, setBooks] = useState<Book[]>([]);
 
     useEffect(() => {
-        var url = "https://" + process.env.REACT_APP_SERVER_URL + "/api/Books?limit=20&offset=0"
+        const url:string = "https://" + import.meta.env.VITE_SERVER_DOMAIN + "/api/Books?limit=20&offset=0"
         fetch(url)
             .then((res) => {return res.json();})
             .then((data) => {setBooks(data);})
@@ -26,7 +34,7 @@ function BookContent() {
     );
 }
 
-function BookModule({book}){
+function BookModule({book}: {book: Book}){
     return (
         <div className="bookModule">
             <div className="bookImg">

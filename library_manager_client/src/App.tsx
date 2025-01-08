@@ -1,23 +1,23 @@
-import React from 'react';
-import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './style/App.css';
-import BookContent from './BookPageContent';
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import './style/App.css'
+import BookContent from './BookPageContent'
 import Header from './Header';
 import Login from './account/Login';
 import Register from './account/Register';
 
+
 function App() {
+
   return (
     <BrowserRouter>
-    <Header />
+      <Header />
       <Routes>
         <Route path='/' element={<BookContent />} />
         <Route path='/login' element={<Login />}/>
+        <Route path='/register' element={<Register />}/>
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-
-export default App;
+export default App
