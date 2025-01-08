@@ -1,6 +1,7 @@
 body{
   min-width: 100vw;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 #root{
@@ -18,6 +19,22 @@ body{
   padding: 0 10px;
   height: 10vh;
   min-height: 50px;
+}
+
+.nav{
+  display: flex;
+  flex-direction: row-reverse;
+  height: 100%;
+  align-self: flex-end;
+  flex-grow: 4;
+}
+
+.nav button{
+  height: 60%;
+  margin: auto 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header h1{
