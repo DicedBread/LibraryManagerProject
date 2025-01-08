@@ -15,9 +15,8 @@ function Login(){
     const nav = useNavigate();
     
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        setFailedLogin(false);
         event.preventDefault();
-        console.log("submitted");
+        setFailedLogin(false);
         const url:string = `https://${import.meta.env.VITE_SERVER_DOMAIN}/api/Account/login`;
         console.log(url)
         fetch(url, {
@@ -31,10 +30,8 @@ function Login(){
         })
         .then(response => {
             if (response.ok) {
-                console.log('Login successful');
                 nav("/");
             } else {
-                console.log("login failed");
                 setFailedLogin(true);
             }
         })
@@ -58,6 +55,7 @@ function Login(){
                     name="email"
                     value={inputs?.email || ""}
                     onChange={handleChange}
+                    required
                 />
             </label>
 
@@ -68,6 +66,7 @@ function Login(){
                     name="password"
                     value={inputs?.password || ""}
                     onChange={handleChange}    
+                    required
                 />
             </label>
 
