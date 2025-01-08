@@ -17,6 +17,7 @@ body{
   flex-direction: row;
   padding: 0 10px;
   height: 10vh;
+  min-height: 50px;
 }
 
 .header h1{
