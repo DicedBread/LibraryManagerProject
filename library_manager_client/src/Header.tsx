@@ -4,14 +4,17 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 function Header(){
-    const [cookies] = useCookies([".AspNetCore.Cookies"]);
+    const [cookies] = useCookies();
     // const [isLoggedIn, setIsloggedIn] = useState<boolean>(!!cookies['.AspNetCore.Cookies']);
     const nav = useNavigate();
     
     return (
         <div className="header">
             <h1>Library</h1>
-            <p>{cookies[".AspNetCore.Cookies"]}</p>
+            {/* <p>{cookies[".AspNetCore.Cookies"] || "sadklajnsdklm" }</p> */}
+
+            
+
             <div className="nav">
                 <button onClick={() => nav("/")}>Home</button>
                 {/* {isLoggedIn && (

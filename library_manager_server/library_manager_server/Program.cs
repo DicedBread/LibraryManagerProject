@@ -82,6 +82,9 @@ internal class Program
             };
             options.Cookie.SameSite = SameSiteMode.None;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.SlidingExpiration = true;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+            // options.Cookie.HttpOnly = false;
         });
 
         builder.Services.AddAuthorization(options =>
