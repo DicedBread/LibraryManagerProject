@@ -1,3 +1,15 @@
+body{
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root{
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
 .header{
   background-color: rgb(190, 182, 145);
@@ -6,6 +18,23 @@
   flex-direction: row;
   padding: 0 10px;
   height: 10vh;
+  min-height: 50px;
+}
+
+.nav{
+  display: flex;
+  flex-direction: row-reverse;
+  height: 100%;
+  align-self: flex-end;
+  flex-grow: 4;
+}
+
+.nav button{
+  height: 60%;
+  margin: auto 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header h1{
@@ -31,8 +60,7 @@
   border-radius: 5px;
   width: 20vw;
   height: auto;
-  /* min-width: 100px; */
-  /* max-width: 200px; */
+
 }
 
 .bookModule p{

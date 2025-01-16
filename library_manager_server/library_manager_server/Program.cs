@@ -12,6 +12,19 @@ internal class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+        var LocalhostHttp = "_LocalhostHttp";
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: LocalhostHttp,
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+        });
+
         string? user = builder.Configuration["library:dbUser"];
         string? pass = builder.Configuration["library:dbPassword"];
         string? address = builder.Configuration["library:dbAddress"];
@@ -67,6 +80,11 @@ internal class Program
                     return Task.CompletedTask;
                 }
             };
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.SlidingExpiration = true;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+            // options.Cookie.HttpOnly = false;
         });
 
         builder.Services.AddAuthorization(options =>
@@ -84,6 +102,7 @@ internal class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors(LocalhostHttp);
             app.UseSwagger();
             app.UseSwaggerUI();
         }

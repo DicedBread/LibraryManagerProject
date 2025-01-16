@@ -2,11 +2,20 @@ import React from "react";
 import "./style/App.css";
 import { useState, useEffect } from "react";
 
+interface Book{
+    id:string,
+    title:string,
+    authour:string,
+    publisher:string,
+    imgUrl:string
+}
+
 function BookContent() {
-    const [books, setBooks] = useState([]);
+    const [books, setBooks] = useState<Book[]>([]);
 
     useEffect(() => {
-        fetch("https://localhost:7291/api/Books?limit=20&offset=0")
+        const url:string = "https://" + import.meta.env.VITE_SERVER_DOMAIN + "/api/Books?limit=20&offset=0"
+        fetch(url)
             .then((res) => {return res.json();})
             .then((data) => {setBooks(data);})
             .catch((err) => {console.log("failed to access books ", err)});
@@ -25,7 +34,7 @@ function BookContent() {
     );
 }
 
-function BookModule({book}){
+function BookModule({book}: {book: Book}){
     return (
         <div className="bookModule">
             <div className="bookImg">
