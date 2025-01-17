@@ -167,8 +167,11 @@ public class LibraryManager : ILibraryManager
 
 		const string userIdParamName = "userIdParam";
 		const string query = $@"
-			SELECT loans.loan_id, loans.user_id, loans.isbn, loans.date
-			FROM loans
+			SELECT l.loan_id, l.user_id, b.isbn, b.title, a.authour, p.publisher, l.date
+			FROM loans l
+			JOIN Books b ON b.isbn = l.isbn
+			JOIN authours a ON b.authour_id = a.authour_id
+			JOIN publishers p on p.publisher_id = b.publisher_id
 			WHERE loans.user_id = @{userIdParamName}
 			;";
 		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
@@ -179,7 +182,14 @@ public class LibraryManager : ILibraryManager
 			Loan loan = new Loan()
 			{
 				LoanId = reader.GetInt32(reader.GetOrdinal("loan_id")),
-				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
+				Book = new Book
+				{
+					Id = reader.GetString(reader.GetOrdinal("isbn")),
+					Title = reader.GetString(reader.GetOrdinal("title")),
+					Authour = reader.GetString(reader.GetOrdinal("authour")),
+					Publisher = reader.GetString(reader.GetOrdinal("publisher")),
+					ImgUrl = reader.GetString(reader.GetOrdinal("img_url")),
+				},
 				UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
 				Date = reader.GetDateTime(reader.GetOrdinal("date")),
 			};
@@ -191,7 +201,15 @@ public class LibraryManager : ILibraryManager
 	public Loan? GetLoan(double loanId)
 	{
 		const string loanIdParamName = "loanId";
-		const string query = $@"SELECT loan_id, user_id, isbn, date FROM loans WHERE loan_id = @{loanIdParamName};";
+		const string query = $@"
+			SELECT l.loan_id, l.user_id, b.isbn, b.title, a.authour, p.publisher, l.date
+			FROM loans l
+			JOIN Books b ON b.isbn = l.isbn
+			JOIN authours a ON b.authour_id = a.authour_id
+			JOIN publishers p on p.publisher_id = b.publisher_id
+			WHERE loan_id = @{loanIdParamName}
+			
+			;";
 		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(loanIdParamName, loanId);
 		NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -200,9 +218,16 @@ public class LibraryManager : ILibraryManager
 			Loan loan = new Loan()
 			{
 				LoanId = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				Book = new Book
+				{
+					Id = reader.GetString(reader.GetOrdinal("isbn")),
+					Title = reader.GetString(reader.GetOrdinal("title")),
+					Authour = reader.GetString(reader.GetOrdinal("authour")),
+					Publisher = reader.GetString(reader.GetOrdinal("publisher")),
+					ImgUrl = reader.GetString(reader.GetOrdinal("img_url")),
+				},
 				UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
-				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
-				Date = reader.GetDateTime(reader.GetOrdinal("date"))
+				Date = reader.GetDateTime(reader.GetOrdinal("date")),
 			};
 			return loan;
 		}
@@ -220,9 +245,17 @@ public class LibraryManager : ILibraryManager
 	{
 		const string isbnPN = "isbn", userIdPN = "user_id", datePN = "date"; 
 		const string query = $@"
-			INSERT INTO loans (isbn, user_id, date)
-			VALUES (@{isbnPN}, @{userIdPN}, @{datePN})
-			RETURNING loan_id, isbn, user_id, date;
+			WITH nl AS
+			(
+			    INSERT INTO loans (isbn, user_id, date)
+				VALUES (@{isbnPN}, @{userIdPN}, @{datePN})
+				RETURNING loan_id, isbn, user_id, date
+			)
+			SELECT nl.loan_id, nl.user_id, b.isbn, b.title, a.authour, b.img_url, p.publisher, nl.date
+			FROM nl 
+			JOIN Books b ON b.isbn = nl.isbn
+			JOIN authours a ON b.authour_id = a.authour_id
+			JOIN publishers p on p.publisher_id = b.publisher_id;
 		";
 		NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(isbnPN, isbn);
@@ -235,9 +268,16 @@ public class LibraryManager : ILibraryManager
 			Loan loan = new Loan()
 			{
 				LoanId = reader.GetInt32(reader.GetOrdinal("loan_id")),
+				Book = new Book
+				{
+					Id = reader.GetString(reader.GetOrdinal("isbn")),
+					Title = reader.GetString(reader.GetOrdinal("title")),
+					Authour = reader.GetString(reader.GetOrdinal("authour")),
+					Publisher = reader.GetString(reader.GetOrdinal("publisher")),
+					ImgUrl = reader.GetString(reader.GetOrdinal("img_url")),
+				},
 				UserId = reader.GetInt32(reader.GetOrdinal("user_id")),
-				Isbn = reader.GetString(reader.GetOrdinal("isbn")),
-				Date = reader.GetDateTime(reader.GetOrdinal("date"))
+				Date = reader.GetDateTime(reader.GetOrdinal("date")),
 			};
 			return loan;
 		}
