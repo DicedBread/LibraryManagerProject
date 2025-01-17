@@ -1,14 +1,9 @@
 import React from "react";
 import "./style/App.css";
 import { useState, useEffect } from "react";
+import { Book } from "./util/Types";
 
-interface Book{
-    id:string,
-    title:string,
-    authour:string,
-    publisher:string,
-    imgUrl:string
-}
+
 
 function BookContent() {
     const [books, setBooks] = useState<Book[]>([]);
