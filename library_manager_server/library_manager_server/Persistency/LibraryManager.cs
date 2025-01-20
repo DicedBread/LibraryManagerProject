@@ -167,12 +167,12 @@ public class LibraryManager : ILibraryManager
 
 		const string userIdParamName = "userIdParam";
 		const string query = $@"
-			SELECT l.loan_id, l.user_id, b.isbn, b.title, a.authour, p.publisher, l.date
+			SELECT l.loan_id, l.user_id, b.isbn, b.title, a.authour, p.publisher, b.img_url, l.date
 			FROM loans l
 			JOIN Books b ON b.isbn = l.isbn
 			JOIN authours a ON b.authour_id = a.authour_id
 			JOIN publishers p on p.publisher_id = b.publisher_id
-			WHERE loans.user_id = @{userIdParamName}
+			WHERE l.user_id = @{userIdParamName}
 			;";
 		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
 		cmd.Parameters.AddWithValue(userIdParamName, userId);
@@ -202,7 +202,7 @@ public class LibraryManager : ILibraryManager
 	{
 		const string loanIdParamName = "loanId";
 		const string query = $@"
-			SELECT l.loan_id, l.user_id, b.isbn, b.title, a.authour, p.publisher, l.date
+			SELECT l.loan_id, l.user_id, b.isbn, b.title, a.authour, p.publisher, b.img_url, l.date
 			FROM loans l
 			JOIN Books b ON b.isbn = l.isbn
 			JOIN authours a ON b.authour_id = a.authour_id
