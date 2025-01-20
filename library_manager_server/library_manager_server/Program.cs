@@ -80,7 +80,7 @@ internal class Program
                     return Task.CompletedTask;
                 }
             };
-            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SameSite = SameSiteMode.Lax;
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             options.SlidingExpiration = true;
             options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
@@ -111,8 +111,6 @@ internal class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
-
-
         app.Run();
     }
 }
