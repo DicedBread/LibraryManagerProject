@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Book, Loan } from "./util/Types";
-import { RouteUrl } from "./util/routeUrl";
+import { RouteUrl } from "./util/RouteUrl";
 
 
 function Loans(){
@@ -12,6 +12,7 @@ function Loans(){
         const url:string = "https://" + import.meta.env.VITE_SERVER_DOMAIN + "/api/loans"
         fetch(url)
         .then((res) => {
+            console.log(res.status);
             if(res.status == 401){
                 nav(RouteUrl.Login);
                 return [];
