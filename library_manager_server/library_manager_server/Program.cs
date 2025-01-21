@@ -3,6 +3,7 @@ using library_manager_server.Controllers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.HttpOverrides;
 using Npgsql;
 using System.Diagnostics.Eventing.Reader;
 
@@ -12,17 +13,19 @@ internal class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        var LocalhostHttp = "_LocalhostHttp";
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy(name: LocalhostHttp,
-                policy =>
-                {
-                    policy.WithOrigins("http://localhost:3000", "https://localhost:3000")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
-                });
+            options.AddDefaultPolicy(builder => {
+                builder.SetIsOriginAllowed(origin =>
+                    {
+                        Console.WriteLine("uri " + new Uri(origin).Host);
+                        return new Uri(origin).Host == "localhost";
+                        
+                    })
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+            });
         });
 
         string? user = builder.Configuration["library:dbUser"];
@@ -102,7 +105,7 @@ internal class Program
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
-            app.UseCors(LocalhostHttp);
+            app.UseCors();
             app.UseSwagger();
             app.UseSwaggerUI();
         }

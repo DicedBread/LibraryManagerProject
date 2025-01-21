@@ -5,9 +5,27 @@
 # CERT_PASSWORD= password used to create cert file 
 
 services:
+  nginx_local_dev_proxy:
+    container_name: nginx-local-dev-proxy
+    image: nginx:1.21.3
+    attach: true
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+    volumes:
+      # Here we mount the local configuration for the Nginx instance
+      - "./nginx-local-dev-proxy-container.conf:/etc/nginx/nginx.conf"
+      # Here we mount the actual source code (or you can mount the build output)
+      # - "./library_manager_client/src:/usr/share/nginx/html"
+    # Enable this for detailed routing debug info
+    command: [nginx-debug, '-g', 'daemon off;']
+
   db:
     container_name: library_manager_database
     build: database
+    attach: false
     ports:
       - "5432:5432"
     environment:
@@ -17,6 +35,7 @@ services:
   backend:
     container_name: library_manager_backend
     build: library_manager_server
+    attach: true
     ports:
       - 8080:8080
     environment:
@@ -31,3 +50,15 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Path=${CONT_CERT_PATH}
     volumes:
       - "${HOST_CERT_PATH}:/https:ro"
+
+  frontend:
+    container_name: library_manager_client
+    build: library_manager_client
+    attach: false
+    # change to volume so it updates and what not
+    ports:
+      - 3000:3000
+    environment:
+      - VITE_SERVER_DOMAIN=http://localhost
+
+  

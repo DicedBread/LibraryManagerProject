@@ -9,7 +9,7 @@ function BookContent() {
     const [books, setBooks] = useState<Book[]>([]);
 
     useEffect(() => {
-        const url:string = "https://" + import.meta.env.VITE_SERVER_DOMAIN + "/api/Books?limit=20&offset=0"
+        const url:string = import.meta.env.VITE_SERVER_DOMAIN + "/api/Books?limit=20&offset=0"
         fetch(url)
             .then((res) => {return res.json();})
             .then((data) => {setBooks(data);})
