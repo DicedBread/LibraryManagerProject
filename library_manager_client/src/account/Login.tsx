@@ -17,7 +17,7 @@ function Login(){
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setFailedLogin(false);
-        const url:string = `https://${import.meta.env.VITE_SERVER_DOMAIN}/api/Account/login`;
+        const url:string = `${import.meta.env.VITE_SERVER_DOMAIN}/api/Account/login`;
         console.log(url)
         fetch(url, {
             method: 'POST',

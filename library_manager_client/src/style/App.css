@@ -4,6 +4,10 @@ body{
   overflow-x: hidden;
 }
 
+p{
+  margin: 0;
+}
+
 #root{
   min-width: 100vw;
   min-height: 100vh;
@@ -79,4 +83,9 @@ body{
 .bookImg img{
   height: 100%;
   margin: 0px auto;
+}
+
+.loanModule{
+  background-color: blue;
+  padding: auto;
 }

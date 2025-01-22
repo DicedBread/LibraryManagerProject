@@ -18,9 +18,7 @@ internal class Program
             options.AddDefaultPolicy(builder => {
                 builder.SetIsOriginAllowed(origin =>
                     {
-                        Console.WriteLine("uri " + new Uri(origin).Host);
                         return new Uri(origin).Host == "localhost";
-                        
                     })
                 .AllowAnyHeader()
                 .AllowAnyMethod()

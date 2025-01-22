@@ -4,7 +4,7 @@ import BookContent from './BookPageContent'
 import Header from './Header';
 import Login from './account/Login';
 import Register from './account/Register';
-import Loans from './Loans'
+import Loans from './loans/Loans'
 import { RouteUrl } from './util/RouteUrl';
 
 

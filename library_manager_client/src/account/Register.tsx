@@ -21,7 +21,7 @@ function Register() {
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const url:string = `https://${import.meta.env.VITE_SERVER_DOMAIN}/api/Account/register`;
+        const url:string = `${import.meta.env.VITE_SERVER_DOMAIN}/api/Account/register`;
         console.log(url)
         fetch(url, {
             method: 'POST',
