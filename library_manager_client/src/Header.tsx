@@ -1,29 +1,57 @@
-import React, { useState } from "react";
+import React, { Context, useContext, useEffect, useState } from "react";
 import "./style/App.css"
 import { useNavigate } from "react-router-dom";
-import { useCookies } from "react-cookie";
+import Cookies from 'js-cookie';
+import { ApiRouteUrl, RouteUrl } from "./util/RouteUrl";
+import { loginStateContext } from "./account/LoginStateContext";
+
+
+
 
 function Header(){
-    const [cookies] = useCookies();
-    // const [isLoggedIn, setIsloggedIn] = useState<boolean>(!!cookies['.AspNetCore.Cookies']);
     const nav = useNavigate();
-    
+    const {LoggedIn, setLoggedIn} = useContext(loginStateContext);
+
+    const logout = () => {
+        const url = `${import.meta.env.VITE_SERVER_DOMAIN}/api/Account/Logout`; 
+        fetch(url, {method: 'POST'})
+        .then(res => {
+            switch (res.status){
+                case 401:
+                    setLoggedIn(false);
+                    break;
+                case 200:
+                    Cookies.remove(".AspNetCore.Cookies")
+                    setLoggedIn(false);
+                    break;
+                default:
+                    break;
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    }
+
     return (
         <div className="header">
             <h1>Library</h1>
-            {/* <p>{cookies[".AspNetCore.Cookies"] || "sadklajnsdklm" }</p> */}
-
-            
 
             <div className="nav">
-                <button onClick={() => nav("/")}>Home</button>
-                {/* {isLoggedIn && (
-                    <p>yeo</p>
-                )} */}
-                <button onClick={() => nav("/login")}>Login</button>
+                <button onClick={() => nav(RouteUrl.Home)}>Home</button>
+                {LoggedIn ? (
+                    <>
+                        <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
+                        <button onClick={logout}>Logout</button>
+                    </>
+                ) : (
+                    <button onClick={() => nav(RouteUrl.Login)}>Login</button>
+                )}
             </div>
         </div>
-    );
+    );  
 }
 
 export default Header
+
+

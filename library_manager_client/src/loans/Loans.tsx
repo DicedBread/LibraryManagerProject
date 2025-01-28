@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Book, Loan } from "../util/Types";
 import { RouteUrl } from "../util/RouteUrl";
+import { loginStateContext } from "../account/LoginStateContext";
 
 
 function Loans(){
     const [userLoans, setUserLoans] = useState<Loan[]>([]); 
+    const {LoggedIn, setLoggedIn} = useContext(loginStateContext);
     const nav = useNavigate();
+
 
     useEffect(() => {
         const url:string = import.meta.env.VITE_SERVER_DOMAIN + "/api/loans"
@@ -14,6 +17,7 @@ function Loans(){
         .then((res) => {
             console.log(res.status);
             if(res.status == 401){
+                setLoggedIn(false);
                 nav(RouteUrl.Login);
                 return [];
             }
