@@ -44,7 +44,7 @@ function LoanModule({loan}: { loan: Loan }){
     return (
         <div className="loanModule">
             <div>
-                <p>{loan.book.title}</p>
+                <h3>{loan.book.title}</h3>
                 <p>{loan.book.authour}</p>
             </div>
             <div>

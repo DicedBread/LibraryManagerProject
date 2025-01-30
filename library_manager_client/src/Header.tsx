@@ -38,15 +38,15 @@ function Header(){
             <h1>Library</h1>
 
             <div className="nav">
-                <button onClick={() => nav(RouteUrl.Home)}>Home</button>
                 {LoggedIn ? (
                     <>
-                        <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
                         <button onClick={logout}>Logout</button>
+                        <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
                     </>
                 ) : (
                     <button onClick={() => nav(RouteUrl.Login)}>Login</button>
                 )}
+                <button onClick={() => nav(RouteUrl.Home)}>Home</button>
             </div>
         </div>
     );  

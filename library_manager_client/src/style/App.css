@@ -86,6 +86,16 @@ p{
 }
 
 .loanModule{
-  background-color: blue;
-  padding: auto;
+  background-color: rgba(163, 158, 132, 0.712);
+  display: flex;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 10px;
+  height: 20%;
+  max-height: 20%;
+  justify-content: space-between;
+}
+
+.loanModule h3{
+  margin: 0;
 }
