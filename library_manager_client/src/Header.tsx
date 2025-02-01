@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { ApiRouteUrl, RouteUrl } from "./util/RouteUrl";
 import { loginStateContext } from "./account/LoginStateContext";
+import { Box, Button, Stack } from "@mui/material";
 
 
 
@@ -34,21 +35,49 @@ function Header(){
     }
 
     return (
-        <div className="header">
+        <Stack 
+            direction="row"
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            spacing={2}
+            sx={{
+                minHeight: "10vh",
+                padding: "0 10px",
+                }}>
             <h1>Library</h1>
-
-            <div className="nav">
-                {LoggedIn ? (
+            <Stack
+                direction={"row"}
+                spacing={{sm:1, md:2 }}
+                >
+            {LoggedIn ? (
                     <>
                         <button onClick={logout}>Logout</button>
                         <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
                     </>
                 ) : (
-                    <button onClick={() => nav(RouteUrl.Login)}>Login</button>
-                )}
-                <button onClick={() => nav(RouteUrl.Home)}>Home</button>
-            </div>
-        </div>
+                    <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
+                )}    
+        
+            <Button onClick={() => nav(RouteUrl.Home)}>Home</Button>
+
+            </Stack>
+        </Stack> 
+
+        // <div className="header">
+        //     <h1>Library</h1>
+
+        //     <div className="nav">
+        //         {LoggedIn ? (
+        //             <>
+        //                 <button onClick={logout}>Logout</button>
+        //                 <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
+        //             </>
+        //         ) : (
+        //             <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
+        //         )}
+        //         <button onClick={() => nav(RouteUrl.Home)}>Home</button>
+        //     </div>
+        // </div>
     );  
 }
 
