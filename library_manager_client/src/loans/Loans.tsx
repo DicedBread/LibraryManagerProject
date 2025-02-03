@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Book, Loan } from "../util/Types";
 import { RouteUrl } from "../util/RouteUrl";
 import { loginStateContext } from "../account/LoginStateContext";
+import { Button, Stack } from "@mui/material";
 
 
 function Loans(){
@@ -28,7 +29,11 @@ function Loans(){
     }, []);
 
     return (
-        <div className="loanContent">
+        <Stack
+            direction={"column"}
+            spacing={1}
+            padding={1}
+        >
             {userLoans.length !== 0 ? (
                 userLoans.map((loan) => {
                     return <LoanModule loan={loan} />
@@ -36,21 +41,27 @@ function Loans(){
             ) : (
                 <p>no loans</p>
             )}
-        </div>
+        </Stack>
     );
 }
 
 function LoanModule({loan}: { loan: Loan }){
     return (
-        <div className="loanModule">
-            <div>
+        <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            border={1} borderRadius={2} padding={1}
+        >
+            <Stack  spacing={0.2}>
                 <h3>{loan.book.title}</h3>
                 <p>{loan.book.authour}</p>
-            </div>
-            <div>
-                <p>Date: {new Date(loan.date).toUTCString()}</p>
-            </div>
-        </div>
+            </Stack>
+            <Stack spacing={2}>
+                <p>{new Date(loan.date).toUTCString()}</p>
+                <Button variant="contained" >Return</Button>
+            </Stack>
+
+        </Stack>
     ) 
     
 }
