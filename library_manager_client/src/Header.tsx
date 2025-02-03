@@ -44,40 +44,25 @@ function Header(){
                 minHeight: "10vh",
                 padding: "0 10px",
                 }}>
+
             <h1>Library</h1>
             <Stack
                 direction={"row"}
                 spacing={{sm:1, md:2 }}
-                >
-            {LoggedIn ? (
-                    <>
-                        <button onClick={logout}>Logout</button>
-                        <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
-                    </>
-                ) : (
-                    <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
-                )}    
-        
-            <Button onClick={() => nav(RouteUrl.Home)}>Home</Button>
-
+                    >
+                {LoggedIn ? (
+                        <>
+                            <Button variant="contained" onClick={logout}>Logout</Button>
+                            <Button variant="contained" onClick={() => nav(RouteUrl.Loans)}>Loans</Button>
+                        </>
+                    ) : (
+                        <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
+                    )}    
+            
+                <Button variant="contained" onClick={() => nav(RouteUrl.Home)}>Home</Button>
+                
             </Stack>
         </Stack> 
-
-        // <div className="header">
-        //     <h1>Library</h1>
-
-        //     <div className="nav">
-        //         {LoggedIn ? (
-        //             <>
-        //                 <button onClick={logout}>Logout</button>
-        //                 <button onClick={() => nav(RouteUrl.Loans)}>Loans</button>
-        //             </>
-        //         ) : (
-        //             <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
-        //         )}
-        //         <button onClick={() => nav(RouteUrl.Home)}>Home</button>
-        //     </div>
-        // </div>
     );  
 }
 

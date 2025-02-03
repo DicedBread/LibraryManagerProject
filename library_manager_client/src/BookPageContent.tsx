@@ -2,6 +2,9 @@ import React from "react";
 import "./style/App.css";
 import { useState, useEffect } from "react";
 import { Book } from "./util/Types";
+import Grid from "@mui/material/Grid2";
+import { Box, Stack } from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 
 
@@ -17,7 +20,7 @@ function BookContent() {
     }, []);
 
     return (
-        <div className="bookContent">
+        <Grid container spacing={1} padding={"10px"}>
             {books.length !== 0 ? (
                 books.map((book) => {
                     return <BookModule book={book} />;
@@ -25,24 +28,32 @@ function BookContent() {
             ) : (
                 <p>No books available</p>
             )}
-        </div>
+        </Grid>
     );
 }
 
 function BookModule({book}: {book: Book}){
+    const theme = useTheme();
     return (
-        <div className="bookModule">
-            <div className="bookImg">
-                <img src={book.imgUrl} alt={book.title + " book image"} />
-            </div>
-            <div>
-                <h4>Title:</h4>
-                <p>{book.title}</p>
-                <br />
-                <h5>Authour:</h5>
-                <p>{book.authour}</p>
-            </div>
-        </div>
+        <Grid 
+            size={{ xs:12, sm:12, md:3 }} 
+            sx={{
+                backgroundColor: theme.palette.mode,
+                borderColor: theme.palette.primary.main,
+                borderRadius: 2
+            }} 
+            border={1}>
+            
+            <Stack padding={"10px"}>
+                <Box alignContent={"center"} justifyContent={"center"} display={"flex"}>
+                    <img src={book.imgUrl} alt={book.title + " book image"} />
+                </Box>
+                <Box>
+                    <h4>{book.title}</h4>
+                    <p>{book.authour}</p>
+                </Box>
+            </Stack>
+        </Grid>
     )
 }
 
