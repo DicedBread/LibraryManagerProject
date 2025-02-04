@@ -1,11 +1,8 @@
 import React, { Context, createContext, ChangeEvent, FormEvent, HtmlHTMLAttributes, useContext, useState } from "react";
-import "../style/App.css"
-import "../style/Form.css"
 import { redirect, useNavigate } from "react-router-dom";
 import { loginStateContext } from "./LoginStateContext";
 import { Box, Button, Stack, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { blue } from "@mui/material/colors";
 
 
 interface Login {

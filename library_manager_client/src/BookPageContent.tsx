@@ -1,5 +1,4 @@
 import React from "react";
-import "./style/App.css";
 import { useState, useEffect } from "react";
 import { Book } from "./util/Types";
 import Grid from "@mui/material/Grid2";

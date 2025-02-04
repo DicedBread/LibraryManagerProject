@@ -4,9 +4,10 @@ import React, {
     FormEvent,
     useState,
 } from "react";
-import "../style/App.css";
-import "../style/Form.css";
 import { useNavigate } from "react-router-dom";
+import { Button, Stack, TextField } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+
 
 interface Register {
     email: string;
@@ -51,44 +52,57 @@ function Register() {
     };
 
     return (
-        <div className="formBase">
-            <form onSubmit={handleSubmit} className="">
-                <label>
-                    Email:
-                    <br />
-                    <input
-                        type="email"
-                        name="email"
+        <Grid
+        container
+        direction={"column"}
+        justifyContent={"center"}
+        padding={20}
+        justifyItems={"center"}
+        alignItems={"center"}
+    >
+        <Grid>
+            <form onSubmit={handleSubmit}>
+                <Stack
+                    border={1}
+                    color={"secondary"}
+                    padding={5}
+                    borderRadius={2}
+                    spacing={1}
+                >
+                    <TextField
+                        color={"primary"}
+                        type={"email"}
+                        label={"email"} 
+                        name={"email"}
                         value={inputs?.email || ""}
                         onChange={handleChange}
                         required
+                        error={failedRegister}
                     />
-                </label>
-                <label>
-                    Username:
-                    <br />
-                    <input
-                        type="text"
-                        name="userName"
+                    <TextField
+                        color={"primary"}
+                        type={"userName"}
+                        label={"username"} 
+                        name={"userName"}
                         value={inputs?.userName || ""}
                         onChange={handleChange}
                         required
+                        error={failedRegister}
                     />
-                </label>
-                <label>
-                    Password:
-                    <br />
-                    <input
-                        type="password"
-                        name="password"
-                        value={inputs?.password || ""}
+                    <TextField 
+                        type={"password"} 
+                        label={"password"} 
+                        name={"password"}
+                        value={inputs?.password || ""} 
                         onChange={handleChange}
                         required
+                        error={failedRegister}
                     />
-                </label>
-                <button type="submit">Register</button>
+                    <Button type="submit" variant="contained">Register</Button>
+                </Stack>
             </form>
-        </div>
+        </Grid>
+    </Grid>
     );
 }
 

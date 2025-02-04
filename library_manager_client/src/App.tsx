@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import './style/App.css'
 import BookContent from './BookPageContent'
 import Header from './Header';
 import Login from './account/Login';

@@ -1,5 +1,4 @@
 import React, { Context, useContext, useEffect, useState } from "react";
-import "./style/App.css"
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
 import { ApiRouteUrl, RouteUrl } from "./util/RouteUrl";
