@@ -17,7 +17,7 @@ function Header(){
         fetch(url, {method: 'POST'})
         .then(res => {
             switch (res.status){
-                case 401:
+                case 401 | 403:
                     setLoggedIn(false);
                     break;
                 case 200:
@@ -55,7 +55,10 @@ function Header(){
                             <Button variant="contained" onClick={() => nav(RouteUrl.Loans)}>Loans</Button>
                         </>
                     ) : (
-                        <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
+                        <>
+                            <Button variant="contained" onClick={() => nav(RouteUrl.Register)}>Register</Button>
+                            <Button variant="contained" onClick={() => nav(RouteUrl.Login)}>Login</Button>
+                        </>
                     )}    
             
                 <Button variant="contained" onClick={() => nav(RouteUrl.Home)}>Home</Button>

@@ -9,7 +9,7 @@ import { createContext, useState } from 'react';
 import { loginStateContext } from './account/LoginStateContext';
 import { createTheme, CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
-
+import "./style/index.css"
 
 
 function App() {
