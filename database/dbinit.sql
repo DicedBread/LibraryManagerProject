@@ -62,7 +62,8 @@ CREATE TABLE public.books (
     title character varying(500),
     img_url character varying(200),
     authour_id bigint DEFAULT 1 NOT NULL,
-    publisher_id bigint DEFAULT 1 NOT NULL
+    publisher_id bigint DEFAULT 1 NOT NULL,
+    text_search tsvector GENERATED ALWAYS AS (to_tsvector('english'::regconfig, (title)::text)) STORED
 );
 
 
@@ -385,6 +386,13 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey1 PRIMARY KEY (user_id);
+
+
+--
+-- Name: text_search_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX text_search_idx ON public.books USING gin (text_search);
 
 
 --
