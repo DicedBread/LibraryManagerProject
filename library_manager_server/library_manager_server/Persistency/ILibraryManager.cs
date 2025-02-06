@@ -74,4 +74,13 @@ public interface ILibraryManager
     /// <param name="isbn"></param>
     /// <returns></returns>
     bool HasActiveLoan(string isbn);
+
+    /// <summary>
+    /// search books 
+    /// </summary>
+    /// <param name="search"></param>
+    /// <param name="limit"></param>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    List<Book> SearchBooks(string search, int limit, int offset);
 }

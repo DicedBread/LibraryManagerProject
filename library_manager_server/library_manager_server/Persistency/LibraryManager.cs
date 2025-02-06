@@ -56,6 +56,41 @@ public class LibraryManager : ILibraryManager
 		return books;
 	}
 
+	public List<Book> SearchBooks(string search, int limit, int offset)
+	{
+		List<Book> books = new List<Book>();
+		if (limit <= 0 || offset < 0) return books;
+		string searchParam = "query";
+		string limitParam = "limit";
+		string offsetParam = "offset";
+		string query = $"""
+			SELECT isbn, title, authour, publisher, img_url FROM books 
+			NATURAL JOIN authours
+			NATURAL JOIN publishers
+			WHERE text_search @@ to_tsquery(@{searchParam})
+			LIMIT @{limitParam} OFFSET @{offsetParam}
+		"""; 
+		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
+		cmd.Parameters.AddWithValue(searchParam, search);
+		cmd.Parameters.AddWithValue(limitParam, limit);
+		cmd.Parameters.AddWithValue(offsetParam, offset);
+		using NpgsqlDataReader reader = cmd.ExecuteReader();
+		while (reader.Read())
+		{
+			Book book = new Book()
+			{
+				Id = reader.GetString(0),
+				Title = reader.GetString(1),
+				Authour = reader.GetString(2),
+				Publisher = reader.GetString(3),
+				ImgUrl = reader.GetString(4),
+			};
+			books.Add(book);
+		}
+		
+		return books;
+	}
+
 	/// <summary>
 	/// get book with isbn number 
 	/// </summary>

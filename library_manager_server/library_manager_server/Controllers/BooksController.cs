@@ -15,10 +15,18 @@ namespace library_manager_server.Controllers
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<IEnumerable<Book>> GetBooks([FromQuery] int limit,[FromQuery] int offset)
+        public ActionResult<IEnumerable<Book>> GetBooks([FromQuery] string? search, [FromQuery] int limit = 20,[FromQuery] int offset = 0)
         {
+            List<Book> books;
             if (limit <= 0 || offset < 0) return BadRequest();
-            List<Book> books = _libraryManager.GetBooks(limit, offset);
+            if (search == null)
+            {
+                books = _libraryManager.GetBooks(limit, offset);
+            }
+            else
+            {
+                books = _libraryManager.SearchBooks(search, limit, offset);
+            }
             return books.ToArray();
         }
         
