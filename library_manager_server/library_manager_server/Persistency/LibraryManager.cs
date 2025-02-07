@@ -71,7 +71,8 @@ public class LibraryManager : ILibraryManager
 			LIMIT @{limitParam} OFFSET @{offsetParam}
 		"""; 
 		using NpgsqlCommand cmd = _dataSource.CreateCommand(query);
-		cmd.Parameters.AddWithValue(searchParam, search);
+		string toStQuery = stringToStQuery(search);
+		cmd.Parameters.AddWithValue(searchParam, toStQuery);
 		cmd.Parameters.AddWithValue(limitParam, limit);
 		cmd.Parameters.AddWithValue(offsetParam, offset);
 		using NpgsqlDataReader reader = cmd.ExecuteReader();
@@ -91,6 +92,19 @@ public class LibraryManager : ILibraryManager
 		return books;
 	}
 
+	private string stringToStQuery(string query)
+	{
+		string[] arr = query.Split(' ');
+		string output = "";
+		for (int i = 0; i < arr.Length; i++)
+		{
+			string v = arr[i];
+			if (i != 0) output += "<->";
+			output += v + ":*";	
+		}
+		return output;
+	} 
+ 
 	/// <summary>
 	/// get book with isbn number 
 	/// </summary>

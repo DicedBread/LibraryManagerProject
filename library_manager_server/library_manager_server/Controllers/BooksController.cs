@@ -8,9 +8,14 @@ namespace library_manager_server.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
+        ILogger<BooksController> _log;
         private readonly ILibraryManager _libraryManager;
 
-        public BooksController(ILibraryManager libraryManager) => this._libraryManager = libraryManager;
+        public BooksController(ILibraryManager libraryManager, ILogger<BooksController> log)
+        {
+            this._libraryManager = libraryManager;
+            _log = log;
+        }
 
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -25,6 +30,7 @@ namespace library_manager_server.Controllers
             }
             else
             {
+                _log.LogInformation($"Searching for {search} of {limit} books.");
                 books = _libraryManager.SearchBooks(search, limit, offset);
             }
             return books.ToArray();
