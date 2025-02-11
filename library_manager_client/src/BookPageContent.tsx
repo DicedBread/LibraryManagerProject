@@ -36,7 +36,9 @@ function BookContent() {
         const url: string = encodeURI(import.meta.env.VITE_SERVER_DOMAIN + `/api/Books?search=${search}`)
         fetch(url)
         .then(res => {
-            return res.json();
+            if(res.status == 200){
+                return res.json();
+            }
         })
         .then(data => {
             setSearchRes(data);
@@ -58,10 +60,20 @@ function BookContent() {
                     name={"search"}
                     value={searchInput}
                     label={"Search"}
+                    sx={{
+                        ".css-5j1080-MuiInputBase-root-MuiOutlinedInput-root": {
+                            borderTopRightRadius: 0,
+                            borderBottomRightRadius: 0,
+                        }
+                    }}
                 />
                 <Button 
+                    sx={{
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
+                    }}
+                    variant="outlined"
                     onClick={ClearSearch}
-                       
                 >
                     < CancelIcon/>
                 </Button>
