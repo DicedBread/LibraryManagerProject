@@ -1,9 +1,9 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import BookContent from './BookPageContent'
-import Header from './Header';
+import BookContent from './pages/BookPage'
+import Header from './util/Header';
 import Login from './account/Login';
 import Register from './account/Register';
-import Loans from './loans/Loans'
+import Loans from './pages/Loans'
 import { RouteUrl } from './util/RouteUrl';
 import { createContext, useState } from 'react';
 import { loginStateContext } from './account/LoginStateContext';

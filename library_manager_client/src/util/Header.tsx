@@ -1,8 +1,8 @@
 import React, { Context, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie';
-import { ApiRouteUrl, RouteUrl } from "./util/RouteUrl";
-import { loginStateContext } from "./account/LoginStateContext";
+import { ApiRouteUrl, RouteUrl } from "../util/RouteUrl";
+import { loginStateContext } from "../account/LoginStateContext";
 import { Box, Button, Stack } from "@mui/material";
 
 
@@ -23,6 +23,7 @@ function Header(){
                 case 200:
                     Cookies.remove(".AspNetCore.Cookies")
                     setLoggedIn(false);
+                    nav(RouteUrl.Home);
                     break;
                 default:
                     break;

@@ -1,11 +1,11 @@
 import React, { ChangeEvent, useContext } from "react";
 import { useState, useEffect } from "react";
-import { Book, Loan } from "./util/Types";
+import { Book, Loan } from "../util/Types";
 import Grid from "@mui/material/Grid2";
 import { Box, Button, IconButton, Stack, TextField } from "@mui/material";
 import { useTheme } from '@mui/material/styles';
-import { loginStateContext } from "./account/LoginStateContext";
-import { RouteUrl } from "./util/RouteUrl";
+import { loginStateContext } from "../account/LoginStateContext";
+import { RouteUrl } from "../util/RouteUrl";
 import { useNavigate } from "react-router-dom";
 import ClearIcon from '@mui/icons-material/Clear';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -53,7 +53,7 @@ function BookContent() {
 
     return (
         <>
-            <Stack direction={"row"}>
+            <Stack direction={"row"} paddingLeft={1}>
                 <TextField
                     onChange={HandleSearch}
                     type={"text"}
