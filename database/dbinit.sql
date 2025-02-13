@@ -96,10 +96,10 @@ CREATE TABLE public.loans (
 ALTER TABLE public.loans OWNER TO postgres;
 
 --
--- Name: loans_loan_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: loans_loan_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.loans_loan_id_seq1
+CREATE SEQUENCE public.loans_loan_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -107,13 +107,13 @@ CREATE SEQUENCE public.loans_loan_id_seq1
     CACHE 1;
 
 
-ALTER SEQUENCE public.loans_loan_id_seq1 OWNER TO postgres;
+ALTER SEQUENCE public.loans_loan_id_seq OWNER TO postgres;
 
 --
--- Name: loans_loan_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: loans_loan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.loans_loan_id_seq1 OWNED BY public.loans.loan_id;
+ALTER SEQUENCE public.loans_loan_id_seq OWNED BY public.loans.loan_id;
 
 
 --
@@ -195,7 +195,7 @@ ALTER TABLE ONLY public.authours ALTER COLUMN authour_id SET DEFAULT nextval('pu
 -- Name: loans loan_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.loans ALTER COLUMN loan_id SET DEFAULT nextval('public.loans_loan_id_seq1'::regclass);
+ALTER TABLE ONLY public.loans ALTER COLUMN loan_id SET DEFAULT nextval('public.loans_loan_id_seq'::regclass);
 
 
 --
@@ -333,10 +333,10 @@ SELECT pg_catalog.setval('public.authours_authour_id_seq', 20, true);
 
 
 --
--- Name: loans_loan_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: loans_loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.loans_loan_id_seq1', 2, true);
+SELECT pg_catalog.setval('public.loans_loan_id_seq', 2, true);
 
 
 --
