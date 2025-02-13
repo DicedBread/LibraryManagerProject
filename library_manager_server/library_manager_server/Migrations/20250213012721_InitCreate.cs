@@ -80,11 +80,14 @@ namespace library_manager_server.Migrations
                         principalColumn: "publisher_id");
                 });
 
+            // migrationBuilder.CreateSequence<long>(name: "loans_loan_id_seq1");
+
             migrationBuilder.CreateTable(
                 name: "loans",
                 columns: table => new
                 {
-                    loan_id = table.Column<long>(type: "bigint", nullable: false, defaultValueSql: "nextval('loans_loan_id_seq1'::regclass)"),
+                    loan_id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     isbn = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     date = table.Column<DateOnly>(type: "date", nullable: false)
@@ -103,6 +106,7 @@ namespace library_manager_server.Migrations
                         principalTable: "users",
                         principalColumn: "user_id");
                 });
+
 
             migrationBuilder.CreateIndex(
                 name: "IX_books_authour_id",
