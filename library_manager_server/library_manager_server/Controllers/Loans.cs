@@ -1,7 +1,7 @@
 ﻿
 using System.Security.Claims;
 using library_manager_server.Controllers;
-using library_manager_server.model;
+using library_manager_server.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +22,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<List<Loan>>> GetLoans()
+    public async Task<ActionResult<List<Model.Loan>>> GetLoans()
     {   
         _logger.LogInformation("GetLoans called");
         string? sessionId = _sessionHandler.GetSession(HttpContext);
@@ -35,7 +35,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     [HttpGet("{loanId:double}", Name = GetLoanName),]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Loan>> GetLoan(double loanId)
+    public async Task<ActionResult<Model.Loan>> GetLoan(double loanId)
     {
         _logger.LogInformation("GetLoan called");
         string? providedSessionId = _sessionHandler.GetSession(HttpContext);
@@ -51,7 +51,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
             return Unauthorized();
         } 
         if(!_libraryManager.OwnsLoan(userIdOrnull.Value, loanId)) return Forbid();
-        Loan? loan = _libraryManager.GetLoan(loanId);
+        Model.Loan? loan = _libraryManager.GetLoan(loanId);
         if (loan == null)
         {
             _logger.LogDebug("No loan associated with this loanId");
@@ -79,7 +79,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
             return Forbid();
         }
 
-        Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateTime.Now);
+        Model.Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateTime.Now);
         if (loan != null)
         {
             _logger.LogInformation($"Created loan {isbn}");
