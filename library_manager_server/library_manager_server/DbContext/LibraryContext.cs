@@ -15,6 +15,11 @@ public partial class LibraryContext : DbContext
     {
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql();
+    }
+
     public virtual DbSet<Authour> Authours { get; set; }
 
     public virtual DbSet<Book> Books { get; set; }
