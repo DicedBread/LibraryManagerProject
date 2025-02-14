@@ -15,25 +15,41 @@ class LibraryManagerEF : ILibraryManager
     
     public Model.Book? GetBook(string isbn)
     {
-        new LibraryContext(this.dbContextOptions).Books.Find(isbn);
-
-        return null;
+        Book? b = new LibraryContext(this.dbContextOptions).Books
+            .Include(e => e.Authour)
+            .Include(e => e.Publisher)
+            .First(e => e.Isbn == isbn);
+        
+        if(b == null) return null;
+        return new Model.Book
+        {
+            Isbn = b.Isbn,
+            Title = b.Title,
+            Authour = b.Authour.Authour1,
+            Publisher = b.Publisher.Publisher1,
+            ImgUrl = b.ImgUrl
+        };
     }
     
     public List<Model.Book> GetBooks(int limit, int offset)
     {
         if(limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
-        return new LibraryContext(dbContextOptions).Books.Skip(offset).Take(limit).ToArray().Select<Book, Model.Book>(e =>
-        {
-            return new Model.Book
+        return new LibraryContext(dbContextOptions).Books
+            .Skip(offset).Take(limit)
+            .Include(a => a.Authour)
+            .Include(p => p.Publisher)
+            .ToArray()
+            .Select<Book, Model.Book>(e =>
             {
-                Isbn = e.Isbn,
-                Title = e.Title,
-                Authour = e.Authour.Authour1,
-                Publisher = e.Publisher.Publisher1,
-                ImgUrl = e.ImgUrl,
-            };
-        }).ToList();
+                return new Model.Book
+                {
+                    Isbn = e.Isbn,
+                    Title = e.Title,
+                    Authour = e.Authour.Authour1,
+                    Publisher = e.Publisher.Publisher1,
+                    ImgUrl = e.ImgUrl,
+                };
+            }).ToList();
     }
 
     public PasswordVerificationResult AuthenticateUser(string email, string password)
