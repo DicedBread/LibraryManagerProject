@@ -135,7 +135,22 @@ class LibraryManagerEF : ILibraryManager
 
     public Model.Loan? GetLoan(double loanId)
     {
-        throw new NotImplementedException();
+        Loan? loan = new LibraryContext(dbContextOptions).Loans.First(l => l.LoanId == loanId);
+        if (loan is null) return null;
+        return new Model.Loan()
+        {
+            LoanId = loan.LoanId,
+            UserId = loan.UserId,
+            Date = loan.Date,
+            Book = new Model.Book()
+            {
+                Isbn = loan.IsbnNavigation.Isbn,
+                Title = loan.IsbnNavigation.Title,
+                Authour = loan.IsbnNavigation.Authour.Authour1,
+                Publisher = loan.IsbnNavigation.Publisher.Publisher1,
+                ImgUrl = loan.IsbnNavigation.ImgUrl,
+            },
+        };
     }
 
     public Model.Loan? CreateLoan(string isbn, double userId, DateTime date)
