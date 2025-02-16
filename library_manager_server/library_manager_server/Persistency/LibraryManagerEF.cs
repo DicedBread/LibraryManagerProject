@@ -89,7 +89,11 @@ class LibraryManagerEF : ILibraryManager
 
     public PasswordVerificationResult AuthenticateUser(string email, string password)
     {
-        throw new NotImplementedException();
+		PasswordHasher<string> ph = new PasswordHasher<string>();
+        User? user = new LibraryContext(dbContextOptions).Users
+            .First(u => u.Email == email);
+        if (user is null) return PasswordVerificationResult.Failed;
+        return ph.VerifyHashedPassword(email, user.Password, password);
     }
 
     public bool AddUser(string email, string password, string username)
