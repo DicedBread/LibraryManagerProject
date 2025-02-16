@@ -79,7 +79,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
             return Forbid();
         }
 
-        Model.Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateTime.Now);
+        Model.Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateOnly.FromDateTime(DateTime.Now));
         if (loan != null)
         {
             _logger.LogInformation($"Created loan {isbn}");
