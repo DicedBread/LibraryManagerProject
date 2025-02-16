@@ -57,7 +57,7 @@ public interface ILibraryManager
     /// <param name="userId">user id</param>
     /// <param name="date">date of creation</param>
     /// <returns>loan if succsessful otherwise null</returns>
-    Model.Loan? CreateLoan(string isbn, double userId, DateTime date);
+    Model.Loan? CreateLoan(string isbn, double userId, DateOnly date);
 
     /// <summary>
     /// 

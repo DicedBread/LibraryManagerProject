@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace library_manager_server.Persistency;
 
@@ -153,9 +154,17 @@ class LibraryManagerEF : ILibraryManager
         };
     }
 
-    public Model.Loan? CreateLoan(string isbn, double userId, DateTime date)
+    public Model.Loan? CreateLoan(string isbn, double userId, DateOnly date)
     {
         throw new NotImplementedException();
+        EntityEntry<Loan> v = new LibraryContext().Loans.Add(new Loan()
+        {
+            Isbn = isbn,
+            UserId = (long)userId,
+            Date = date,
+        });
+        v.State = EntityState.Modified; // ??
+        return null;
     }
 
     public bool DeleteLoan(double loanId)
