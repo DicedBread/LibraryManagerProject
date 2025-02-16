@@ -51,6 +51,41 @@ class LibraryManagerEF : ILibraryManager
                 };
             }).ToList();
     }
+    
+    public List<Model.Book> SearchBooks(string search, int limit, int offset)
+    {
+        throw new NotImplementedException();
+        if(limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
+        return new LibraryContext(dbContextOptions).Books
+            .Skip(offset).Take(limit)
+            .Include(a => a.Authour)
+            .Include(p => p.Publisher)
+            .ToArray()
+            .Select<Book, Model.Book>(e =>
+            {
+                return new Model.Book
+                {
+                    Isbn = e.Isbn,
+                    Title = e.Title,
+                    Authour = e.Authour.Authour1,
+                    Publisher = e.Publisher.Publisher1,
+                    ImgUrl = e.ImgUrl,
+                };
+            }).ToList();     
+    }
+    
+    private string stringToStQuery(string query)
+	{ 
+        string[] arr = query.Split(' ');
+		string output = "";
+		for (int i = 0; i < arr.Length; i++)
+		{
+			string v = arr[i];
+			if (i != 0) output += "<->";
+			output += v + ":*";	
+		}
+		return output;
+	} 
 
     public PasswordVerificationResult AuthenticateUser(string email, string password)
     {
@@ -93,11 +128,6 @@ class LibraryManagerEF : ILibraryManager
     }
 
     public bool HasActiveLoan(string isbn)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Model.Book> SearchBooks(string search, int limit, int offset)
     {
         throw new NotImplementedException();
     }
