@@ -108,7 +108,29 @@ class LibraryManagerEF : ILibraryManager
 
     public List<Model.Loan> GetLoans(double userId)
     {
-        throw new NotImplementedException();
+        return new LibraryContext(dbContextOptions).Loans
+            .Include(e => e.IsbnNavigation)
+            .Include(e => e.IsbnNavigation.Publisher)
+            .Include(e => e.IsbnNavigation.Authour)
+            .Where(l => l.UserId == userId)
+            .ToArray()
+            .Select<Loan, Model.Loan>(l =>
+            {
+                return new Model.Loan
+                {
+                    LoanId = l.LoanId,
+                    UserId = l.UserId,
+                    Date = l.Date,
+                    Book = new Model.Book
+                    {
+                        Isbn = l.IsbnNavigation.Isbn,
+                        Title = l.IsbnNavigation.Title,
+                        Authour = l.IsbnNavigation.Authour.Authour1,
+                        Publisher = l.IsbnNavigation.Publisher.Publisher1,
+                        ImgUrl = l.IsbnNavigation.ImgUrl,
+                    },
+                };
+            }).ToList();
     }
 
     public Model.Loan? GetLoan(double loanId)
