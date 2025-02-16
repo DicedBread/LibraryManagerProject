@@ -103,7 +103,7 @@ class LibraryManagerEF : ILibraryManager
 
     public double? GetUserId(string email)
     {
-        throw new NotImplementedException();
+        return new LibraryContext(dbContextOptions).Users.First(u => u.Email == email).UserId;
     }
 
     public List<Model.Loan> GetLoans(double userId)
