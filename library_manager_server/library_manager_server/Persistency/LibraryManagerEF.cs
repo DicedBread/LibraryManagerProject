@@ -54,10 +54,14 @@ class LibraryManagerEF : ILibraryManager
     }
     
     public List<Model.Book> SearchBooks(string search, int limit, int offset)
-    {
-        throw new NotImplementedException();
+    { 
         if(limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
+        string searchQuery = stringToStQuery(search);
         return new LibraryContext(dbContextOptions).Books
+            .FromSql($"""
+                      SELECT * FROM Books
+                      WHERE text_search @@ to_tsquery({searchQuery})
+                      """)
             .Skip(offset).Take(limit)
             .Include(a => a.Authour)
             .Include(p => p.Publisher)
@@ -157,13 +161,28 @@ class LibraryManagerEF : ILibraryManager
     public Model.Loan? CreateLoan(string isbn, double userId, DateOnly date)
     {
         throw new NotImplementedException();
-        EntityEntry<Loan> v = new LibraryContext().Loans.Add(new Loan()
+        LibraryContext context = new LibraryContext(dbContextOptions);
+        EntityEntry<Loan> v = context.Loans.Add(new Loan()
         {
             Isbn = isbn,
             UserId = (long)userId,
             Date = date,
         });
-        v.State = EntityState.Modified; // ??
+        int ret = context.SaveChanges();
+        if(ret == 1) return new Model.Loan
+        {
+            LoanId = v.Entity.LoanId,
+            UserId = v.Entity.UserId,
+            Date = v.Entity.Date,
+            Book = new Model.Book()
+            {
+                Isbn = v.Entity.Isbn,
+                Title = v.Entity.IsbnNavigation.Title,
+                Authour = v.Entity.IsbnNavigation.Authour.Authour1,
+                Publisher = v.Entity.IsbnNavigation.Publisher.Publisher1,
+                ImgUrl = v.Entity.IsbnNavigation.ImgUrl,
+            },
+        };
         return null;
     }
 
