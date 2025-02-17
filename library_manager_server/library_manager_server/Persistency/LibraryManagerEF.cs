@@ -200,7 +200,11 @@ class LibraryManagerEF : ILibraryManager
 
     public bool DeleteLoan(long loanId)
     {
-        throw new NotImplementedException();
+        LibraryContext context = new LibraryContext(dbContextOptions);
+        context.Remove(loanId);
+        int ret = context.SaveChanges();
+        if(ret == 1) return true;
+        return false;
     }
     
 
