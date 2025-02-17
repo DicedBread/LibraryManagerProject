@@ -106,12 +106,12 @@ class LibraryManagerEF : ILibraryManager
         throw new NotImplementedException();
     }
 
-    public double? GetUserId(string email)
+    public long? GetUserId(string email)
     {
         return new LibraryContext(dbContextOptions).Users.First(u => u.Email == email).UserId;
     }
 
-    public List<Model.Loan> GetLoans(double userId)
+    public List<Model.Loan> GetLoans(long userId)
     {
         return new LibraryContext(dbContextOptions).Loans
             .Include(e => e.IsbnNavigation)
@@ -138,9 +138,13 @@ class LibraryManagerEF : ILibraryManager
             }).ToList();
     }
 
-    public Model.Loan? GetLoan(double loanId)
+    public Model.Loan? GetLoan(long loanId)
     {
-        Loan? loan = new LibraryContext(dbContextOptions).Loans.First(l => l.LoanId == loanId);
+        Loan? loan = new LibraryContext(dbContextOptions).Loans
+            .Include(e => e.IsbnNavigation)
+            .Include(e => e.IsbnNavigation.Publisher)
+            .Include(e => e.IsbnNavigation.Authour)
+            .First(l => l.LoanId == loanId);
         if (loan is null) return null;
         return new Model.Loan()
         {
@@ -158,7 +162,7 @@ class LibraryManagerEF : ILibraryManager
         };
     }
 
-    public Model.Loan? CreateLoan(string isbn, double userId, DateOnly date)
+    public Model.Loan? CreateLoan(string isbn, long userId, DateOnly date)
     {
         throw new NotImplementedException();
         LibraryContext context = new LibraryContext(dbContextOptions);
@@ -185,16 +189,20 @@ class LibraryManagerEF : ILibraryManager
         };
         return null;
     }
+    
+    public bool OwnsLoan(long loanId, long userId)
+    {
+        LibraryContext context = new LibraryContext(dbContextOptions);
+        Loan? loan = context.Loans.First(l => l.LoanId == loanId && l.UserId == userId);
+        if(loan == null) return false;
+        return true;
+    }
 
-    public bool DeleteLoan(double loanId)
+    public bool DeleteLoan(long loanId)
     {
         throw new NotImplementedException();
     }
-
-    public bool OwnsLoan(double loanId, double userId)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     public bool HasActiveLoan(string isbn)
     {

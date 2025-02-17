@@ -37,9 +37,9 @@ public interface ILibraryManager
     /// <returns>true if added successfully false if not</returns>
     bool AddUser(string email, string password, string username);
 
-    double? GetUserId(string email);
-    List<Model.Loan> GetLoans(double userId);
-    Model.Loan? GetLoan(double loanId);
+    long? GetUserId(string email);
+    List<Model.Loan> GetLoans(long userId);
+    Model.Loan? GetLoan(long loanId);
 
     /// <summary>
     /// create loan 
@@ -48,7 +48,7 @@ public interface ILibraryManager
     /// <param name="userId">user id</param>
     /// <param name="date"></param>
     /// <returns>true if succsessful otherwise false</returns>
-    // bool CreateLoan(string isbn, double userId, DateTime date);
+    // bool CreateLoan(string isbn, long userId, DateTime date);
     
     /// <summary>
     /// create loan 
@@ -57,16 +57,16 @@ public interface ILibraryManager
     /// <param name="userId">user id</param>
     /// <param name="date">date of creation</param>
     /// <returns>loan if succsessful otherwise null</returns>
-    Model.Loan? CreateLoan(string isbn, double userId, DateOnly date);
+    Model.Loan? CreateLoan(string isbn, long userId, DateOnly date);
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="loanId"></param>
     /// <returns></returns>
-    bool DeleteLoan(double loanId);
+    bool DeleteLoan(long loanId);
 
-    bool OwnsLoan(double loanId, double userId);
+    bool OwnsLoan(long loanId, long userId);
 
     /// <summary>
     /// is the book with isbn already loaned out

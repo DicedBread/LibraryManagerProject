@@ -75,7 +75,7 @@ namespace library_manager_server.Controllers
 			{
 				case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success:
 					_logger.LogInformation($"Successfull authenticated user: {email} ");
-					double? userId = _libraryManger.GetUserId(email);
+					long? userId = _libraryManger.GetUserId(email);
 					if(userId is not null)
 					{
 						Guid id = _sessionHandler.CreateSession(userId.Value);

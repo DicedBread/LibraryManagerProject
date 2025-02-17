@@ -16,7 +16,7 @@ public interface ISessionHandler
     /// </summary>
     /// <param name="userId">user a session is created for</param>
     /// <returns>session id associated with user</returns>
-    Guid CreateSession(double userId);
+    Guid CreateSession(long userId);
 
     /// <summary>
     /// remove session from local cache
@@ -34,5 +34,5 @@ public interface ISessionHandler
 
     string? GetSession(HttpContext httpContext);
     
-    double? GetUserId(string providedSessionId);
+    long? GetUserId(string providedSessionId);
 }

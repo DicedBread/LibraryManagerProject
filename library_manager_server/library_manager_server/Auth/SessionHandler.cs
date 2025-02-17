@@ -7,7 +7,7 @@ namespace library_manager_server
         public string ClaimName { get; } = "sessionId";
 
 
-        private readonly Dictionary<string, double> _sessionsCache = new Dictionary<string, double>();
+        private readonly Dictionary<string, long> _sessionsCache = new Dictionary<string, long>();
         private readonly ILogger<SessionHandler>? _logger;
 
         public SessionHandler() { }
@@ -18,14 +18,14 @@ namespace library_manager_server
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="guid"></param>
-        private void AddSession(double userId, Guid guid)
+        private void AddSession(long userId, Guid guid)
         {
             _logger?.LogInformation($"new session added userId:{userId} guid:{guid}");
             _sessionsCache.Add(guid.ToString(), userId);
         }
 
 
-        public Guid CreateSession(double userId)
+        public Guid CreateSession(long userId)
         {   
             Guid guid = Guid.NewGuid();
             AddSession(userId, guid);
@@ -56,9 +56,9 @@ namespace library_manager_server
         }
 
 
-        public double? GetUserId(string providedSessionId)
+        public long? GetUserId(string providedSessionId)
         {
-            if (_sessionsCache.TryGetValue(providedSessionId, out double userId))
+            if (_sessionsCache.TryGetValue(providedSessionId, out long userId))
             {
                 return _sessionsCache[providedSessionId];
             }
