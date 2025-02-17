@@ -83,8 +83,11 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
         if (loan != null)
         {
             _logger.LogInformation($"Created loan {isbn}");
-            string? r = Url.Link(GetLoanName, new { loanId = loan.LoanId });
-            return Created(r, loan);
+            var builder = new UriBuilder();
+            builder.Scheme = Request.Scheme;
+            builder.Host = Request.Host.Value;
+            builder.Path = "api/loans/" + loan.LoanId;
+            return Created(builder.Uri, loan);
         }
         return BadRequest();
     }

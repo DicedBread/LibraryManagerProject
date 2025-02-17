@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices.JavaScript;
 using System.Security.Claims;
 using library_manager_server;
-using library_manager_server.model;
+using library_manager_server.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,21 +10,22 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework.Internal;
+using Book = library_manager_server.Model.Book;
 
 namespace library_manager_server_tests;
 
 [TestFixture]
 public class LoansTests
 {
-    private const double TestUserId = 1;
+    private const long TestUserId = 1;
     private const string TestSessionId = "1";
     private const string TestBookISBN = "12ab"; 
 
     private Mock<ISessionHandler> _sessionHandlerMock;
     private Mock<ILibraryManager> _libraryManagerMock;
     private ControllerContext _controllerContext;
-    private List<Loan> _loans = new List<Loan>();
-    private Loan _testLoan;
+    private List<library_manager_server.Model.Loan> _loans = new List<library_manager_server.Model.Loan>();
+    private library_manager_server.Model.Loan _testLoan;
     
     [SetUp]
     public void Setup()
@@ -32,12 +33,19 @@ public class LoansTests
         _loans.Clear();
         for (int i = 0; i < 10; i++)
         {
-            _loans.Add(new Loan()
+            _loans.Add(new library_manager_server.Model.Loan()
             {
                 LoanId = i,
                 UserId = TestUserId,
-                Isbn = "a" + i.ToString(),
-                Date = new DateTime(2017, 1, i + 1),
+                Book = new library_manager_server.Model.Book
+                {
+                    Isbn = "a" + i.ToString(),
+                    Title = "text book",
+                    Authour = "bob",
+                    Publisher = "testBooks",
+                    ImgUrl = "test.com",
+                },
+                Date = DateOnly.FromDateTime(new DateTime(2017, 1, i + 1)),
             });
         }
         _testLoan = _loans[0];
@@ -58,7 +66,7 @@ public class LoansTests
         
         _libraryManagerMock.Setup(m => m.GetLoans(TestUserId)).Returns(_loans);
         
-        // _libraryManagerMock.Setup(m => m.CreateLoan(TestBookISBN, TestUserId, It.IsAny<DateTime>())).Returns(null);
+        _libraryManagerMock.Setup(m => m.CreateLoan(TestBookISBN, TestUserId, It.IsAny<DateOnly>())).Returns(_testLoan);
     }
     
     [Test]
@@ -66,7 +74,7 @@ public class LoansTests
     {
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<Loan> ret = await controller.GetLoan(1);
+        ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         Assert.IsNotNull(ret.Value);
         Assert.That(_testLoan, Is.EqualTo(ret.Value)); 
@@ -79,7 +87,7 @@ public class LoansTests
         
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<Loan> ret = await controller.GetLoan(1);
+        ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
         Assert.IsNotNull(returnValue);
@@ -90,11 +98,11 @@ public class LoansTests
     public async Task GetLoan_DeadSession()
     {
         _sessionHandlerMock.Setup(m => m.IsActiveSession(It.IsAny<string>())).Returns(false); // dead session 
-        _sessionHandlerMock.Setup(m => m.GetUserId(It.IsAny<string>())).Returns((double?) null); // dead session
+        _sessionHandlerMock.Setup(m => m.GetUserId(It.IsAny<string>())).Returns((long?) null); // dead session
         
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<Loan> ret = await controller.GetLoan(1);
+        ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
         Assert.IsNotNull(returnValue);
@@ -108,7 +116,7 @@ public class LoansTests
         
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<Loan> ret = await controller.GetLoan(1);
+        ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         ForbidResult? returnValue = ret.Result as ForbidResult; // forbid res does not contain status code 
         Assert.IsNotNull(returnValue);
@@ -117,11 +125,11 @@ public class LoansTests
     
     [Test]
     public async Task GetLoan_LoanDoesNotExist(){
-        _libraryManagerMock.Setup(m => m.GetLoan(1)).Returns((Loan?) null); // no loan
+        _libraryManagerMock.Setup(m => m.GetLoan(1)).Returns((Func<library_manager_server.Model.Loan?>)null); // no loan
         
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<Loan> ret = await controller.GetLoan(1);
+        ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
 
         BadRequestResult? returnValue = ret.Result as BadRequestResult;
         Assert.IsNotNull(returnValue);
@@ -133,7 +141,7 @@ public class LoansTests
     {
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<List<Loan>> ret = await controller.GetLoans();
+        ActionResult<List<library_manager_server.Model.Loan>> ret = await controller.GetLoans();
         
         Assert.IsNotNull(ret.Value);
         Assert.That(_loans, Is.EqualTo(ret.Value)); 
@@ -143,11 +151,11 @@ public class LoansTests
     public async Task GetLoans_DeadSession()
     {
         _sessionHandlerMock.Setup(m => m.IsActiveSession(It.IsAny<string>())).Returns(false);
-        _sessionHandlerMock.Setup(m => m.GetUserId(It.IsAny<string>())).Returns((double?) null);
+        _sessionHandlerMock.Setup(m => m.GetUserId(It.IsAny<string>())).Returns((long?) null);
         
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<List<Loan>> ret = await controller.GetLoans();
+        ActionResult<List<library_manager_server.Model.Loan>> ret = await controller.GetLoans();
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
         Assert.IsNotNull(returnValue);
@@ -161,7 +169,7 @@ public class LoansTests
         
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
-        ActionResult<List<Loan>> ret = await controller.GetLoans();
+        ActionResult<List<library_manager_server.Model.Loan>> ret = await controller.GetLoans();
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
         Assert.IsNotNull(returnValue);
@@ -173,12 +181,19 @@ public class LoansTests
     {
         Loans controller = new Loans(_libraryManagerMock.Object, NullLogger<Loans>.Instance, _sessionHandlerMock.Object);
         controller.ControllerContext = _controllerContext;
+        HttpContext httpContext = new DefaultHttpContext();
+        httpContext.Request.Method = "POST";
+        httpContext.Request.Scheme = "https";
+        httpContext.Request.ContentType = "application/json";
+        httpContext.Request.Host = new HostString("localhost");
+        httpContext.Request.Path = $"/api/loans/loan/{TestBookISBN}";
+        controller.ControllerContext.HttpContext = httpContext;
+        
         IActionResult ret = await controller.CreateLoan(TestBookISBN);
+        CreatedResult? Result = ret as CreatedResult;    
         
-        CreatedResult? Result = ret as CreatedResult;      
-        
-        Assert.True(false);
-        // Assert.IsNotNull(Result);
-        // Assert.That(Result.StatusCode, Is.EqualTo((int) HttpStatusCode.Created));
+        Console.WriteLine(Result.ToString());
+        Assert.IsNotNull(Result);
+        Assert.That(Result.StatusCode, Is.EqualTo((int) HttpStatusCode.Created));
     }
 }
