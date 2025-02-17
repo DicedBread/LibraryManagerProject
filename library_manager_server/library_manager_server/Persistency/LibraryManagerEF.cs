@@ -201,15 +201,21 @@ class LibraryManagerEF : ILibraryManager
     public bool DeleteLoan(long loanId)
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
-        context.Remove(loanId);
+        Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == loanId);
+        if (loan != null)
+        {
+            context.Loans.Remove(loan);
+        }
         int ret = context.SaveChanges();
         if(ret == 1) return true;
         return false;
     }
     
-
     public bool HasActiveLoan(string isbn)
     {
-        throw new NotImplementedException();
+        LibraryContext context = new LibraryContext(dbContextOptions);
+        Loan? loan = context.Loans.First(l => l.Isbn == isbn);
+        if(loan == null) return false;
+        return true;
     }
 }
