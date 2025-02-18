@@ -195,5 +195,7 @@ public class LoansTests
         Console.WriteLine(Result.ToString());
         Assert.IsNotNull(Result);
         Assert.That(Result.StatusCode, Is.EqualTo((int) HttpStatusCode.Created));
+        Assert.That(_testLoan, Is.EqualTo(Result.Value)); 
+
     }
 }
