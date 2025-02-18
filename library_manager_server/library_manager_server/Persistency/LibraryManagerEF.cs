@@ -164,29 +164,37 @@ class LibraryManagerEF : ILibraryManager
 
     public Model.Loan? CreateLoan(string isbn, long userId, DateOnly date)
     {
-        throw new NotImplementedException();
         LibraryContext context = new LibraryContext(dbContextOptions);
-        EntityEntry<Loan> v = context.Loans.Add(new Loan()
-        {
-            Isbn = isbn,
-            UserId = (long)userId,
-            Date = date,
-        });
-        int ret = context.SaveChanges();
-        if(ret == 1) return new Model.Loan
-        {
-            LoanId = v.Entity.LoanId,
-            UserId = v.Entity.UserId,
-            Date = v.Entity.Date,
-            Book = new Model.Book()
+        EntityEntry<Loan> newLoan = context.Loans
+            .Add(new Loan()
             {
-                Isbn = v.Entity.Isbn,
-                Title = v.Entity.IsbnNavigation.Title,
-                Authour = v.Entity.IsbnNavigation.Authour.Authour1,
-                Publisher = v.Entity.IsbnNavigation.Publisher.Publisher1,
-                ImgUrl = v.Entity.IsbnNavigation.ImgUrl,
-            },
-        };
+                Isbn = isbn,
+                UserId = (long)userId,
+                Date = date,
+            });
+        int ret = context.SaveChanges();
+        
+        if(ret == 1)
+        {
+            context.Entry(newLoan.Entity).Reference(e => e.IsbnNavigation).Load();
+            context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Publisher).Load();
+            context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Authour).Load();
+            
+            return new Model.Loan
+            {
+                LoanId = newLoan.Entity.LoanId,
+                UserId = newLoan.Entity.UserId,
+                Date = newLoan.Entity.Date,
+                Book = new Model.Book()
+                {
+                    Isbn = newLoan.Entity.Isbn,
+                    Title = newLoan.Entity.IsbnNavigation.Title,
+                    Authour = newLoan.Entity.IsbnNavigation.Authour.Authour1,
+                    Publisher = newLoan.Entity.IsbnNavigation.Publisher.Publisher1,
+                    ImgUrl = newLoan.Entity.IsbnNavigation.ImgUrl,
+                },
+            };
+        }
         return null;
     }
     
@@ -214,7 +222,7 @@ class LibraryManagerEF : ILibraryManager
     public bool HasActiveLoan(string isbn)
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
-        Loan? loan = context.Loans.First(l => l.Isbn == isbn);
+        Loan? loan = context.Loans.FirstOrDefault(l => l.Isbn == isbn);
         if(loan == null) return false;
         return true;
     }
