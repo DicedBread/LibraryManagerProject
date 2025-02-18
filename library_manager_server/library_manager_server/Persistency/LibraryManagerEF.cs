@@ -19,7 +19,7 @@ class LibraryManagerEF : ILibraryManager
         Book? b = new LibraryContext(this.dbContextOptions).Books
             .Include(e => e.Authour)
             .Include(e => e.Publisher)
-            .First(e => e.Isbn == isbn);
+            .FirstOrDefault(e => e.Isbn == isbn);
         
         if(b == null) return null;
         return new Model.Book
@@ -96,7 +96,7 @@ class LibraryManagerEF : ILibraryManager
     {
 		PasswordHasher<string> ph = new PasswordHasher<string>();
         User? user = new LibraryContext(dbContextOptions).Users
-            .First(u => u.Email == email);
+            .FirstOrDefault(u => u.Email == email);
         if (user is null) return PasswordVerificationResult.Failed;
         return ph.VerifyHashedPassword(email, user.Password, password);
     }
@@ -108,7 +108,7 @@ class LibraryManagerEF : ILibraryManager
 
     public long? GetUserId(string email)
     {
-        return new LibraryContext(dbContextOptions).Users.First(u => u.Email == email).UserId;
+        return new LibraryContext(dbContextOptions).Users.FirstOrDefault(u => u.Email == email)?.UserId;
     }
 
     public List<Model.Loan> GetLoans(long userId)
@@ -144,7 +144,7 @@ class LibraryManagerEF : ILibraryManager
             .Include(e => e.IsbnNavigation)
             .Include(e => e.IsbnNavigation.Publisher)
             .Include(e => e.IsbnNavigation.Authour)
-            .First(l => l.LoanId == loanId);
+            .FirstOrDefault(l => l.LoanId == loanId);
         if (loan is null) return null;
         return new Model.Loan()
         {
@@ -201,7 +201,7 @@ class LibraryManagerEF : ILibraryManager
     public bool OwnsLoan(long loanId, long userId)
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
-        Loan? loan = context.Loans.First(l => l.LoanId == loanId && l.UserId == userId);
+        Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == loanId && l.UserId == userId);
         if(loan == null) return false;
         return true;
     }
