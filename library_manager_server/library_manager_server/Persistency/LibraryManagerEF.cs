@@ -103,7 +103,12 @@ class LibraryManagerEF : ILibraryManager
 
     public bool AddUser(string email, string password, string username)
     {
-        throw new NotImplementedException();
+        LibraryContext context = new LibraryContext(dbContextOptions);
+        string hashedPw = new PasswordHasher<String>().HashPassword(email, password);
+        context.Add(new User { Email = email, Password = hashedPw, Username = username });
+        int ret = context.SaveChanges();
+        if(ret == 1) return true;
+        return false;
     }
 
     public long? GetUserId(string email)
