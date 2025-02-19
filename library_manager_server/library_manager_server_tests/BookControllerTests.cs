@@ -20,7 +20,7 @@ namespace library_manager_server_tests
                 // mockDB.Setup(m => m.GetBook("jim")).Returns(testOut);
 
 
-            Assert.False(true);
+            Assert.Fail();
         }
     }
 }

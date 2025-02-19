@@ -76,7 +76,7 @@ public class LoansTests
         controller.ControllerContext = _controllerContext;
         ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
-        Assert.IsNotNull(ret.Value);
+        Assert.That(ret.Value != null);
         Assert.That(_testLoan, Is.EqualTo(ret.Value)); 
     }
 
@@ -90,7 +90,7 @@ public class LoansTests
         ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
-        Assert.IsNotNull(returnValue);
+        Assert.That(returnValue != null);
         Assert.That(returnValue.StatusCode, Is.EqualTo((int) HttpStatusCode.Unauthorized));
     }
 
@@ -105,7 +105,7 @@ public class LoansTests
         ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
-        Assert.IsNotNull(returnValue);
+        Assert.That(returnValue != null);
         Assert.That(returnValue.StatusCode, Is.EqualTo((int) HttpStatusCode.Unauthorized));
     }
 
@@ -119,7 +119,7 @@ public class LoansTests
         ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
         
         ForbidResult? returnValue = ret.Result as ForbidResult; // forbid res does not contain status code 
-        Assert.IsNotNull(returnValue);
+        Assert.That(returnValue != null);
         Assert.That(returnValue.GetType(), Is.EqualTo(typeof(ForbidResult))); 
     }
     
@@ -132,7 +132,7 @@ public class LoansTests
         ActionResult<library_manager_server.Model.Loan> ret = await controller.GetLoan(1);
 
         BadRequestResult? returnValue = ret.Result as BadRequestResult;
-        Assert.IsNotNull(returnValue);
+        Assert.That(returnValue != null);
         Assert.That(returnValue.StatusCode, Is.EqualTo((int) HttpStatusCode.BadRequest));
     }
 
@@ -143,7 +143,7 @@ public class LoansTests
         controller.ControllerContext = _controllerContext;
         ActionResult<List<library_manager_server.Model.Loan>> ret = await controller.GetLoans();
         
-        Assert.IsNotNull(ret.Value);
+        Assert.That(ret.Value != null);
         Assert.That(_loans, Is.EqualTo(ret.Value)); 
     }
 
@@ -158,7 +158,7 @@ public class LoansTests
         ActionResult<List<library_manager_server.Model.Loan>> ret = await controller.GetLoans();
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
-        Assert.IsNotNull(returnValue);
+        Assert.That(returnValue != null);
         Assert.That(returnValue.StatusCode, Is.EqualTo((int) HttpStatusCode.Unauthorized));
     }
 
@@ -172,7 +172,7 @@ public class LoansTests
         ActionResult<List<library_manager_server.Model.Loan>> ret = await controller.GetLoans();
         
         UnauthorizedResult? returnValue = ret.Result as UnauthorizedResult;
-        Assert.IsNotNull(returnValue);
+        Assert.That(returnValue != null);
         Assert.That(returnValue.StatusCode, Is.EqualTo((int) HttpStatusCode.Unauthorized));
     }
 
@@ -193,7 +193,7 @@ public class LoansTests
         CreatedResult? Result = ret as CreatedResult;    
         
         Console.WriteLine(Result.ToString());
-        Assert.IsNotNull(Result);
+        Assert.That(Result != null);
         Assert.That(Result.StatusCode, Is.EqualTo((int) HttpStatusCode.Created));
         Assert.That(_testLoan, Is.EqualTo(Result.Value)); 
 
