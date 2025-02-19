@@ -9,22 +9,31 @@ namespace library_manager_server_tests;
 [TestFixture]
 public class LibraryManagerEFTests
 {
-    const string testDBName = "library";
-    const string testDBUser = "postgres";
-    const string testDBPassword = "postgres";
-    const int testDBPort = 5432;
+    private const string TestDbHost = "localhost";
+    private const string TestDbName = "library";
+    private const string TestDbUser = "postgres";
+    private const string TestDbPassword = "1234";
+    private const int TestDbPort = 5432;
 
-    // #pragma warning disable NUnit1032
-    private PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
+    private readonly PostgreSqlContainer _postgreSqlContainer = new PostgreSqlBuilder()
         .WithImage("postgres:16.2")
         .WithName("testDB")
-        .WithDatabase(testDBName)
-        .WithPassword(testDBPassword)
-        .WithPortBinding(testDBPort, testDBPort)
-        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
+        .WithDatabase(TestDbName)
+        .WithPassword(TestDbPassword)
+        .WithPortBinding(TestDbPort, 5432)
+        .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(TestDbPort))
         .Build();
-    // #pragma warning restore NUnit1032
 
+    private readonly DbContextOptionsBuilder<LibraryContext> _options = new DbContextOptionsBuilder<LibraryContext>()
+        .UseNpgsql(new Npgsql.NpgsqlConnectionStringBuilder()
+        {
+            Host = TestDbHost,
+            Port = TestDbPort,
+            Database = TestDbName,
+            Username = TestDbUser,
+            Password = TestDbPassword,
+        }.ConnectionString);
+    
     [OneTimeSetUp]
     public void oneTimeSetup()
     {
@@ -34,24 +43,19 @@ public class LibraryManagerEFTests
     public async Task setupAsync()
     {
         await _postgreSqlContainer.StartAsync();
-        Console.WriteLine("db container setup completed");
-        
+        Console.WriteLine("db container setup completed");    
         var conStrB = new Npgsql.NpgsqlConnectionStringBuilder()
         {
-            Host = "localhost",
-            Port = testDBPort,
-            Database = testDBName,
-            Username = testDBUser,
-            Password = testDBPassword,
-        };
-        
-        DbContextOptionsBuilder<LibraryContext> options = new DbContextOptionsBuilder<LibraryContext>();
-        options.UseNpgsql(conStrB.ConnectionString);
-        
-        LibraryContext context = new LibraryContext(options.Options);
+            Host = TestDbHost,
+            Port = TestDbPort,
+            Database = TestDbName,
+            Username = TestDbUser,
+            Password = TestDbPassword,
+        }.ConnectionString;
+ 
+        LibraryContext context = new LibraryContext(_options.Options);
         await context.Database.MigrateAsync();
         Console.WriteLine("db migrated");
-
     }
     
     
@@ -59,6 +63,19 @@ public class LibraryManagerEFTests
     [SetUp]
     public void Setup()
     {
+        new LibraryContext(_options).Books.Add(new Book
+        {
+            Isbn = null,
+            Title = null,
+            ImgUrl = null,
+            AuthourId = 0,
+            PublisherId = 0,
+            TextSearch = null,
+            Authour = null,
+            Loans = null,
+            Publisher = null
+        });
+
         // drop all data
         // reinsert data
     }
@@ -69,11 +86,21 @@ public class LibraryManagerEFTests
         Assert.Fail();
     }
     
+    [Test]
+    public void test2()
+    {
+        Assert.Fail();
+    }
+    
     [OneTimeTearDown]
     public void OneTimeTeardown()
     {
+        Console.WriteLine("db container teardown completed");
         _postgreSqlContainer.DisposeAsync();
     }
+
+
+    
     
     
     
