@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace library_manager_server.Persistency;
 
-class LibraryManagerEF : ILibraryManager
+public class LibraryManagerEF : ILibraryManager
 {
     private readonly DbContextOptions<LibraryContext> dbContextOptions;
     
