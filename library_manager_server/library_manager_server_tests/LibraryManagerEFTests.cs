@@ -214,6 +214,31 @@ public class LibraryManagerEFTests
         library_manager_server.Model.Book? ret = lm.GetBook("invalidISBN");
         Assert.That(ret, Is.Null);
     }
+
+    [Test]
+    public void Search_Invalid_Params()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            lm.SearchBooks("1213", -1, 0);
+        });
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            lm.SearchBooks("1213", 1, -1);
+        });
+    }
+
+    [Test]
+    public void AuthenticateUser_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        PasswordVerificationResult res = lm.AuthenticateUser("email_0", testUserPassword);
+        Assert.That(res, Is.EqualTo(PasswordVerificationResult.Success));
+    }
+    
     
     
     
