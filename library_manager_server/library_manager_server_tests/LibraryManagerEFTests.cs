@@ -238,7 +238,14 @@ public class LibraryManagerEFTests
         PasswordVerificationResult res = lm.AuthenticateUser("email_0", testUserPassword);
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Success));
     }
-    
+
+    [Test]
+    public void AuthenticateUser_Invalid_Params()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        PasswordVerificationResult res = lm.AuthenticateUser("email_0", "invalid_password");
+        Assert.That(res, Is.EqualTo(PasswordVerificationResult.Failed));
+    }
     
     
     
