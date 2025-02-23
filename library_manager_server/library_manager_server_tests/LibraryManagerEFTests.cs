@@ -166,8 +166,7 @@ public class LibraryManagerEFTests
         Assert.That(ret[0], 
             Is.EqualTo(
                 new library_manager_server.Model.Book
-                {
-                    Isbn = _books[0].Isbn,
+                { Isbn = _books[0].Isbn,
                     Title = _books[0].Title,
                     Authour = _authours[0].Authour1,
                     Publisher = _publishers[0].Publisher1,
@@ -176,7 +175,19 @@ public class LibraryManagerEFTests
             ).UsingPropertiesComparer()
             );
     }
-    
+ 
+    [Test]
+    public void GetBooks_Invalid_Params()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        Assert.Throws<ArgumentException>(() => { 
+            List<library_manager_server.Model.Book> ret = lm.GetBooks(-3, 0);
+        });
+        
+        Assert.Throws<ArgumentException>(() => { 
+            List<library_manager_server.Model.Book> ret = lm.GetBooks(0, -1); 
+        });
+    } 
     
     [OneTimeTearDown]
     public void OneTimeTeardown()
