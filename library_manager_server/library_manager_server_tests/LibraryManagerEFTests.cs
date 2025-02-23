@@ -187,7 +187,35 @@ public class LibraryManagerEFTests
         Assert.Throws<ArgumentException>(() => { 
             List<library_manager_server.Model.Book> ret = lm.GetBooks(0, -1); 
         });
-    } 
+    }
+
+    [Test]
+    public void GetBook_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+
+        library_manager_server.Model.Book book = new library_manager_server.Model.Book
+        {
+            Isbn = _books[0].Isbn,
+            Title = _books[0].Title,
+            Authour = _authours[0].Authour1,
+            Publisher = _publishers[0].Publisher1,
+            ImgUrl = _books[0].ImgUrl,
+        };
+        
+        library_manager_server.Model.Book? ret = lm.GetBook(book.Isbn);
+        Assert.That(ret , Is.EqualTo(book).UsingPropertiesComparer());
+    }
+
+    [Test]
+    public void GetBook_Invalid_NoMatchingBook()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        library_manager_server.Model.Book? ret = lm.GetBook("invalidISBN");
+        Assert.That(ret, Is.Null);
+    }
+    
+    
     
     [OneTimeTearDown]
     public void OneTimeTeardown()
