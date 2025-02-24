@@ -291,13 +291,22 @@ public class LibraryManagerEFTests
         Assert.That(ret, Is.EqualTo(false));
     }
 
+    [Test]
+    public void GetUserId_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long? id = lm.GetUserId(_users[0].Email);
+        LibraryContext context = new LibraryContext(_options.Options);
+        User? u = context.Users.FirstOrDefault(u => u.Email == _users[0].Email);
+        
+        Assert.That(id, Is.Not.Null);
+        Assert.That(u, Is.Not.Null);
+        Assert.That(id, Is.EqualTo(u.UserId));
+    }
+
+    
 
 
-    
-    
-    
-    
-    
-    
-    
+
+
 }
