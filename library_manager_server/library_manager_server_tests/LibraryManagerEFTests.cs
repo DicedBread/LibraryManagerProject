@@ -251,7 +251,7 @@ public class LibraryManagerEFTests
     }
     
     [Test]
-    public void AuthenticateUser_Invalid_Params()
+    public void AuthenticateUser_Invalid_Password()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         PasswordVerificationResult res = lm.AuthenticateUser("email_0", "invalid_password");
@@ -265,8 +265,23 @@ public class LibraryManagerEFTests
         PasswordVerificationResult res = lm.AuthenticateUser("non existant email", testUserPassword);
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Failed));
     }
-    
 
+    [Test]
+    public void addUser_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        string testUserEmail = "test@email.com";
+        string testUserFirstName = "testFirstName";
+        bool ret = lm.AddUser(testUserEmail, testUserPassword, testUserFirstName);
+        Assert.That(ret, Is.EqualTo(true));
+
+        LibraryContext context = new LibraryContext(_options.Options);
+        User? user = context.Users.FirstOrDefault(u => u.Email == testUserEmail);
+        Assert.That(user, Is.Not.Null);
+        Assert.That(user.Email, Is.EqualTo(testUserEmail));
+        Assert.That(user.Password, Is.Not.EqualTo(new PasswordHasher<string>().HashPassword(testUserEmail, testUserPassword)));
+        Assert.That(user.Username, Is.EqualTo(testUserFirstName));
+    }
 
 
     
