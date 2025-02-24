@@ -267,7 +267,7 @@ public class LibraryManagerEFTests
     }
 
     [Test]
-    public void addUser_Valid()
+    public void AddUser_Valid()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         string testUserEmail = "test@email.com";
@@ -284,12 +284,14 @@ public class LibraryManagerEFTests
     }
 
     [Test]
-    public void addUser_Invalid_UserAlreadyExists()
+    public void AddUser_Invalid_UserAlreadyExists()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         bool ret = lm.AddUser(_users[0].Email, testUserPassword, _users[0].Username);
         Assert.That(ret, Is.EqualTo(false));
     }
+
+
 
     
     
