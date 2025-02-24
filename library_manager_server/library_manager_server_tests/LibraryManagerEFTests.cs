@@ -133,7 +133,6 @@ public class LibraryManagerEFTests
             _loans.Add(loan);
         }
         context.SaveChanges();
-        context.Dispose();
     }
 
     [TearDown]
@@ -145,8 +144,13 @@ public class LibraryManagerEFTests
         context.Users.RemoveRange(context.Users.ToList());
         context.Authours.RemoveRange(context.Authours.ToList());
         context.Publishers.RemoveRange(context.Publishers.ToList());
+
+        context.Database.ExecuteSql($"SELECT setval('authours_authour_id_seq', 1, false)");
+        context.Database.ExecuteSql($"SELECT setval('publishers_publisher_id_seq', 1, false)");
+        context.Database.ExecuteSql($"SELECT setval('users_user_id_seq', 1, false)");
+        context.Database.ExecuteSql($"SELECT setval('loans_loan_id_seq', 1, false)");
+        
         context.SaveChanges();
-        context.Dispose();
         
         _loans.Clear();
         _users.Clear();
@@ -193,7 +197,7 @@ public class LibraryManagerEFTests
     public void GetBook_Valid()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-
+    
         library_manager_server.Model.Book book = new library_manager_server.Model.Book
         {
             Isbn = _books[0].Isbn,
@@ -214,23 +218,23 @@ public class LibraryManagerEFTests
         library_manager_server.Model.Book? ret = lm.GetBook("invalidISBN");
         Assert.That(ret, Is.Null);
     }
-
+    
     [Test]
     public void Search_Invalid_Params()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-
+    
         Assert.Throws<ArgumentException>(() =>
         {
             lm.SearchBooks("1213", -1, 0);
         });
-
+    
         Assert.Throws<ArgumentException>(() =>
         {
             lm.SearchBooks("1213", 1, -1);
         });
     }
-
+    
     [Test]
     public void AuthenticateUser_Valid()
     {
@@ -238,7 +242,7 @@ public class LibraryManagerEFTests
         PasswordVerificationResult res = lm.AuthenticateUser("email_0", testUserPassword);
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Success));
     }
-
+    
     [Test]
     public void AuthenticateUser_Invalid_Params()
     {
@@ -247,7 +251,13 @@ public class LibraryManagerEFTests
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Failed));
     }
     
-    
+    [Test]
+    public void AuthenticateUser_Invalid_User()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        PasswordVerificationResult res = lm.AuthenticateUser("non existant email", testUserPassword);
+        Assert.That(res, Is.EqualTo(PasswordVerificationResult.Failed));
+    }
     
     [OneTimeTearDown]
     public void OneTimeTeardown()
