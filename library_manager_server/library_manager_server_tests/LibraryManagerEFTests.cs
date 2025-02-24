@@ -160,6 +160,13 @@ public class LibraryManagerEFTests
         Console.WriteLine("db container teardown completed");
     }
     
+    [OneTimeTearDown]
+    public void OneTimeTeardown()
+    {
+        Console.WriteLine("db container teardown completed");
+        _postgreSqlContainer.DisposeAsync();
+    }
+    
     [Test]
     public void GetBooks_Valid()
     {
@@ -259,12 +266,7 @@ public class LibraryManagerEFTests
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Failed));
     }
     
-    [OneTimeTearDown]
-    public void OneTimeTeardown()
-    {
-        Console.WriteLine("db container teardown completed");
-        _postgreSqlContainer.DisposeAsync();
-    }
+
 
 
     
