@@ -283,6 +283,13 @@ public class LibraryManagerEFTests
         Assert.That(user.Username, Is.EqualTo(testUserFirstName));
     }
 
+    [Test]
+    public void addUser_Invalid_UserAlreadyExists()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        bool ret = lm.AddUser(_users[0].Email, testUserPassword, _users[0].Username);
+        Assert.That(ret, Is.EqualTo(false));
+    }
 
     
     

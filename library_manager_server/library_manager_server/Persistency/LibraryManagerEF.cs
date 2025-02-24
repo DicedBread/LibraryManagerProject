@@ -105,6 +105,7 @@ public class LibraryManagerEF : ILibraryManager
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
         string hashedPw = new PasswordHasher<String>().HashPassword(email, password);
+        if(null != context.Users.FirstOrDefault(E => E.Email == email)) return false;
         context.Add(new User { Email = email, Password = hashedPw, Username = username });
         int ret = context.SaveChanges();
         if(ret == 1) return true;
