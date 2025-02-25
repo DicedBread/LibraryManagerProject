@@ -304,8 +304,15 @@ public class LibraryManagerEFTests
         Assert.That(id, Is.EqualTo(u.UserId));
     }
 
-    
+    [Test]
+    public void GetUserId_Invalid_UserDoesNotExist()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long? id = lm.GetUserId("nonExistingEmail");
+        Assert.That(id, Is.Null);
+    }
 
+    
 
 
 
