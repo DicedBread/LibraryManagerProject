@@ -326,5 +326,13 @@ public class LibraryManagerEFTests
         }
     }
 
+    [Test]
+    public void GetLoans_Invalid_UserDoesNotExist()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        List<library_manager_server.Model.Loan> loans = lm.GetLoans(20);
+        Assert.That(loans.Count, Is.LessThanOrEqualTo(0));
+    }
 
+    
 }
