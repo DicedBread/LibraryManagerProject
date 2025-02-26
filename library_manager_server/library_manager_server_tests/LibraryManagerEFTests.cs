@@ -127,7 +127,7 @@ public class LibraryManagerEFTests
             {
                 UserId = 1,
                 Isbn = _books[i].Isbn,
-                Date = new DateOnly(),
+                Date = DateOnly.FromDateTime(DateTime.MinValue),
             };
             context.Loans.Add(loan);
             _loans.Add(loan);
@@ -312,8 +312,19 @@ public class LibraryManagerEFTests
         Assert.That(id, Is.Null);
     }
 
-    
-
+    [Test]
+    public void GetLoans_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        List<library_manager_server.Model.Loan> loans = lm.GetLoans(1);
+        Assert.That(loans.Count, Is.EqualTo(2));
+        for (int i = 0; i < loans.Count; i++)
+        {
+            Assert.That(loans[i].UserId, Is.EqualTo(1));
+            Assert.That(loans[i].LoanId, Is.EqualTo(i + 1));
+            Assert.That(loans[i].Date, Is.EqualTo(DateOnly.FromDateTime(DateTime.MinValue)));
+        }
+    }
 
 
 }
