@@ -334,5 +334,16 @@ public class LibraryManagerEFTests
         Assert.That(loans.Count, Is.LessThanOrEqualTo(0));
     }
 
+    [Test]
+    public void GetLoan_Valid()
+    {
+        long testId = 1;
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        library_manager_server.Model.Loan? loan = lm.GetLoan(testId);
+        Assert.That(loan, Is.Not.Null);
+        Assert.That(loan.LoanId, Is.EqualTo(1));
+        Assert.That(loan.Date, Is.EqualTo(DateOnly.FromDateTime(DateTime.MinValue)));
+    }
+    
     
 }
