@@ -353,4 +353,32 @@ public class LibraryManagerEFTests
         library_manager_server.Model.Loan? loan = lm.GetLoan(NoLoanTestId);
         Assert.That(loan, Is.Null);
     }
+
+    [Test]
+    public void CreateLoan_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long testUserId = 1;
+        string testUserISBN = _books[5].Isbn;
+        DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
+        library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
+        Assert.That(createdLoan, Is.Not.Null);
+        Assert.That(createdLoan.Book.Isbn, Is.EqualTo(testUserISBN));
+        Assert.That(createdLoan.UserId, Is.EqualTo(testUserId));
+        Assert.That(createdLoan.Date, Is.EqualTo(testDate));
+        
+        LibraryContext context = new LibraryContext(_options.Options);
+        Loan? loan = context.Loans
+            .Include(e => e.IsbnNavigation)
+            .FirstOrDefault(u => u.IsbnNavigation.Isbn == testUserISBN);
+        
+        Assert.That(loan, Is.Not.Null);
+        Assert.That(createdLoan.Book.Isbn, Is.EqualTo(testUserISBN));
+        Assert.That(createdLoan.UserId, Is.EqualTo(testUserId));
+        Assert.That(createdLoan.Date, Is.EqualTo(testDate));
+        Assert.That(createdLoan.LoanId, Is.EqualTo(loan.LoanId));
+        Assert.That(createdLoan.Book.Isbn, Is.EqualTo(loan.Isbn));
+    }
+
+ 
 }
