@@ -390,5 +390,27 @@ public class LibraryManagerEFTests
         library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
         Assert.That(createdLoan, Is.Null);
     }
+
+    [Test]
+    public void CreateLoan_Invalid_NonExistingUser()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long nonExistingUserId = 999; 
+        string testUserISBN = _books[0].Isbn;
+        DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
+        library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, nonExistingUserId, testDate);
+        Assert.That(createdLoan, Is.Null);
+    }
+
+    [Test]
+    public void OwnsLoan_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long testUserId = 1;
+        long testLoanId = _loans[0].LoanId;
+        bool ownsLoan = lm.OwnsLoan(testUserId, testLoanId);
+        Assert.That(ownsLoan, Is.True);
+    }
     
+
 }
