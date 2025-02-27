@@ -164,7 +164,7 @@ function BookModule({ book }: { book: Book }) {
                         <p>{book.authour}</p>
                     </Box>
                     <Stack alignSelf={"flex-end"}>
-                        <Button onClick={() => HandleLoan(book.Isbn)} variant={"contained"} sx={{ width: "100px" }}>Loan</Button>
+                        <Button onClick={() => HandleLoan(book.isbn)} variant={"contained"} sx={{ width: "100px" }}>Loan</Button>
                     </Stack>
                 </Stack>
             </Stack>
