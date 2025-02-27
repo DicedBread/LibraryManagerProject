@@ -38,17 +38,17 @@ public class LibraryManagerEFTests
             Username = TestDbUser,
             Password = TestDbPassword,
         }.ConnectionString);
-    
+
     [OneTimeSetUp]
     public void oneTimeSetup()
     {
         setupAsync().Wait();
     }
-    
+
     public async Task setupAsync()
     {
         await _postgreSqlContainer.StartAsync();
-        Console.WriteLine("db container setup completed");    
+        Console.WriteLine("db container setup completed");
         String connectionString = new Npgsql.NpgsqlConnectionStringBuilder()
         {
             Host = TestDbHost,
@@ -57,18 +57,18 @@ public class LibraryManagerEFTests
             Username = TestDbUser,
             Password = TestDbPassword,
         }.ConnectionString;
- 
+
         LibraryContext context = new LibraryContext(_options.Options);
         await context.Database.MigrateAsync();
         Console.WriteLine("db migrated");
     }
-   
+
     private List<Authour> _authours = [];
     private List<Publisher> _publishers = [];
     private List<User> _users = [];
     private List<Book> _books = [];
     private List<Loan> _loans = [];
-    
+
     [SetUp]
     public void Setup()
     {
@@ -77,7 +77,7 @@ public class LibraryManagerEFTests
         const int numOfBooks = 10;
         const int numOfUsers = 2;
         const int numOfLoans = 2;
-        
+
         LibraryContext context = new LibraryContext(_options.Options);
         for (int i = 0; i < numOfAuthors; i++)
         {
@@ -114,7 +114,7 @@ public class LibraryManagerEFTests
         for (int i = 0; i < numOfUsers; i++)
         {
             string username = $"User_{i}";
-            string hashedPw = new PasswordHasher<string>().HashPassword(username ,testUserPassword);
+            string hashedPw = new PasswordHasher<string>().HashPassword(username, testUserPassword);
             User user = new User { Username = username, Email = $"email_{i}", Password = hashedPw };
             context.Users.Add(user);
             _users.Add(user);
@@ -149,9 +149,9 @@ public class LibraryManagerEFTests
         context.Database.ExecuteSql($"SELECT setval('publishers_publisher_id_seq', 1, false)");
         context.Database.ExecuteSql($"SELECT setval('users_user_id_seq', 1, false)");
         context.Database.ExecuteSql($"SELECT setval('loans_loan_id_seq', 1, false)");
-        
+
         context.SaveChanges();
-        
+
         _loans.Clear();
         _users.Clear();
         _books.Clear();
@@ -159,25 +159,26 @@ public class LibraryManagerEFTests
         _authours.Clear();
         Console.WriteLine("db container teardown completed");
     }
-    
+
     [OneTimeTearDown]
     public void OneTimeTeardown()
     {
         Console.WriteLine("db container teardown completed");
         _postgreSqlContainer.DisposeAsync();
     }
-    
+
     [Test]
     public void GetBooks_Valid()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         List<library_manager_server.Model.Book> ret = lm.GetBooks(3, 0);
-        
+
         Assert.That(ret.Count == 3);
-        Assert.That(ret[0], 
+        Assert.That(ret[0],
             Is.EqualTo(
                 new library_manager_server.Model.Book
-                { Isbn = _books[0].Isbn,
+                {
+                    Isbn = _books[0].Isbn,
                     Title = _books[0].Title,
                     Authour = _authours[0].Authour1,
                     Publisher = _publishers[0].Publisher1,
@@ -186,17 +187,19 @@ public class LibraryManagerEFTests
             ).UsingPropertiesComparer()
             );
     }
- 
+
     [Test]
     public void GetBooks_Invalid_Params()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        Assert.Throws<ArgumentException>(() => { 
+        Assert.Throws<ArgumentException>(() =>
+        {
             List<library_manager_server.Model.Book> ret = lm.GetBooks(-3, 0);
         });
-        
-        Assert.Throws<ArgumentException>(() => { 
-            List<library_manager_server.Model.Book> ret = lm.GetBooks(0, -1); 
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            List<library_manager_server.Model.Book> ret = lm.GetBooks(0, -1);
         });
     }
 
@@ -204,7 +207,7 @@ public class LibraryManagerEFTests
     public void GetBook_Valid()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-    
+
         library_manager_server.Model.Book book = new library_manager_server.Model.Book
         {
             Isbn = _books[0].Isbn,
@@ -213,9 +216,9 @@ public class LibraryManagerEFTests
             Publisher = _publishers[0].Publisher1,
             ImgUrl = _books[0].ImgUrl,
         };
-        
+
         library_manager_server.Model.Book? ret = lm.GetBook(book.Isbn);
-        Assert.That(ret , Is.EqualTo(book).UsingPropertiesComparer());
+        Assert.That(ret, Is.EqualTo(book).UsingPropertiesComparer());
     }
 
     [Test]
@@ -225,23 +228,23 @@ public class LibraryManagerEFTests
         library_manager_server.Model.Book? ret = lm.GetBook("invalidISBN");
         Assert.That(ret, Is.Null);
     }
-    
+
     [Test]
     public void Search_Invalid_Params()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-    
+
         Assert.Throws<ArgumentException>(() =>
         {
             lm.SearchBooks("1213", -1, 0);
         });
-    
+
         Assert.Throws<ArgumentException>(() =>
         {
             lm.SearchBooks("1213", 1, -1);
         });
     }
-    
+
     [Test]
     public void AuthenticateUser_Valid()
     {
@@ -249,7 +252,7 @@ public class LibraryManagerEFTests
         PasswordVerificationResult res = lm.AuthenticateUser("email_0", testUserPassword);
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Success));
     }
-    
+
     [Test]
     public void AuthenticateUser_Invalid_Password()
     {
@@ -257,7 +260,7 @@ public class LibraryManagerEFTests
         PasswordVerificationResult res = lm.AuthenticateUser("email_0", "invalid_password");
         Assert.That(res, Is.EqualTo(PasswordVerificationResult.Failed));
     }
-    
+
     [Test]
     public void AuthenticateUser_Invalid_User()
     {
@@ -298,7 +301,7 @@ public class LibraryManagerEFTests
         long? id = lm.GetUserId(_users[0].Email);
         LibraryContext context = new LibraryContext(_options.Options);
         User? u = context.Users.FirstOrDefault(u => u.Email == _users[0].Email);
-        
+
         Assert.That(id, Is.Not.Null);
         Assert.That(u, Is.Not.Null);
         Assert.That(id, Is.EqualTo(u.UserId));
@@ -366,12 +369,12 @@ public class LibraryManagerEFTests
         Assert.That(createdLoan.Book.Isbn, Is.EqualTo(testUserISBN));
         Assert.That(createdLoan.UserId, Is.EqualTo(testUserId));
         Assert.That(createdLoan.Date, Is.EqualTo(testDate));
-        
+
         LibraryContext context = new LibraryContext(_options.Options);
         Loan? loan = context.Loans
             .Include(e => e.IsbnNavigation)
             .FirstOrDefault(u => u.IsbnNavigation.Isbn == testUserISBN);
-        
+
         Assert.That(loan, Is.Not.Null);
         Assert.That(createdLoan.Book.Isbn, Is.EqualTo(testUserISBN));
         Assert.That(createdLoan.UserId, Is.EqualTo(testUserId));
@@ -395,7 +398,7 @@ public class LibraryManagerEFTests
     public void CreateLoan_Invalid_NonExistingUser()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        long nonExistingUserId = 999; 
+        long nonExistingUserId = 999;
         string testUserISBN = _books[0].Isbn;
         DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
         library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, nonExistingUserId, testDate);
@@ -411,7 +414,7 @@ public class LibraryManagerEFTests
         bool ownsLoan = lm.OwnsLoan(testUserId, testLoanId);
         Assert.That(ownsLoan, Is.True);
     }
-    
+
     [Test]
     public void OwnsLoan_Invalid()
     {
@@ -422,4 +425,43 @@ public class LibraryManagerEFTests
         Assert.That(ownsLoan, Is.False);
     }
 
+    [Test]
+    public void DeleteLoan_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long testLoanId = _loans[0].LoanId;
+        bool deleted = lm.DeleteLoan(testLoanId);
+        Assert.That(deleted, Is.True);
+
+        LibraryContext context = new LibraryContext(_options.Options);
+        Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == testLoanId);
+        Assert.That(loan, Is.Null);
+    }
+
+    [Test]
+    public void DeleteLoan_Invalid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long invalidLoanId = 999;
+        bool deleted = lm.DeleteLoan(invalidLoanId);
+        Assert.That(deleted, Is.False);
+    }
+
+    [Test]
+    public void HasActiveLoan_Valid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        string IsbnWithLoan = _books[0].Isbn;
+        bool hasActiveLoan = lm.HasActiveLoan(IsbnWithLoan);
+        Assert.That(hasActiveLoan, Is.True);
+    }
+
+    [Test]
+    public void HasActiveLoan_Invalid_NoActiveLoan()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        string IsbnWithoutLoan = "abc";
+        bool hasActiveLoan = lm.HasActiveLoan(IsbnWithoutLoan);
+        Assert.That(hasActiveLoan, Is.False);
+    }
 }
