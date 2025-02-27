@@ -344,6 +344,13 @@ public class LibraryManagerEFTests
         Assert.That(loan.LoanId, Is.EqualTo(1));
         Assert.That(loan.Date, Is.EqualTo(DateOnly.FromDateTime(DateTime.MinValue)));
     }
-    
-    
+
+    [Test]
+    public void GetLoan_Invalid_LoanDoesnotExist()
+    {
+        long NoLoanTestId = 200;
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        library_manager_server.Model.Loan? loan = lm.GetLoan(NoLoanTestId);
+        Assert.That(loan, Is.Null);
+    }
 }
