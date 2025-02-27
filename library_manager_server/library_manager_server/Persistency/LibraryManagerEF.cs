@@ -2,26 +2,27 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Npgsql;
 
 namespace library_manager_server.Persistency;
 
 public class LibraryManagerEF : ILibraryManager
 {
     private readonly DbContextOptions<LibraryContext> dbContextOptions;
-    
+
     public LibraryManagerEF(DbContextOptions<LibraryContext> libraryContext)
     {
         this.dbContextOptions = libraryContext;
     }
-    
+
     public Model.Book? GetBook(string isbn)
     {
         Book? b = new LibraryContext(this.dbContextOptions).Books
             .Include(e => e.Authour)
             .Include(e => e.Publisher)
             .FirstOrDefault(e => e.Isbn == isbn);
-        
-        if(b == null) return null;
+
+        if (b == null) return null;
         return new Model.Book
         {
             Isbn = b.Isbn,
@@ -31,10 +32,10 @@ public class LibraryManagerEF : ILibraryManager
             ImgUrl = b.ImgUrl
         };
     }
-    
+
     public List<Model.Book> GetBooks(int limit, int offset)
     {
-        if(limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
+        if (limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
         return new LibraryContext(dbContextOptions).Books
             .Skip(offset).Take(limit)
             .Include(a => a.Authour)
@@ -52,10 +53,10 @@ public class LibraryManagerEF : ILibraryManager
                 };
             }).ToList();
     }
-    
+
     public List<Model.Book> SearchBooks(string search, int limit, int offset)
-    { 
-        if(limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
+    {
+        if (limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
         string searchQuery = stringToStQuery(search);
         return new LibraryContext(dbContextOptions).Books
             .FromSql($"""
@@ -76,25 +77,25 @@ public class LibraryManagerEF : ILibraryManager
                     Publisher = e.Publisher.Publisher1,
                     ImgUrl = e.ImgUrl,
                 };
-            }).ToList();     
+            }).ToList();
     }
-    
+
     private string stringToStQuery(string query)
-	{ 
+    {
         string[] arr = query.Split(' ');
-		string output = "";
-		for (int i = 0; i < arr.Length; i++)
-		{
-			string v = arr[i];
-			if (i != 0) output += "<->";
-			output += v + ":*";	
-		}
-		return output;
-	} 
+        string output = "";
+        for (int i = 0; i < arr.Length; i++)
+        {
+            string v = arr[i];
+            if (i != 0) output += "<->";
+            output += v + ":*";
+        }
+        return output;
+    }
 
     public PasswordVerificationResult AuthenticateUser(string email, string password)
     {
-		PasswordHasher<string> ph = new PasswordHasher<string>();
+        PasswordHasher<string> ph = new PasswordHasher<string>();
         User? user = new LibraryContext(dbContextOptions).Users
             .FirstOrDefault(u => u.Email == email);
         if (user is null) return PasswordVerificationResult.Failed;
@@ -105,10 +106,10 @@ public class LibraryManagerEF : ILibraryManager
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
         string hashedPw = new PasswordHasher<String>().HashPassword(email, password);
-        if(null != context.Users.FirstOrDefault(E => E.Email == email)) return false;
+        if (null != context.Users.FirstOrDefault(E => E.Email == email)) return false;
         context.Add(new User { Email = email, Password = hashedPw, Username = username });
         int ret = context.SaveChanges();
-        if(ret == 1) return true;
+        if (ret == 1) return true;
         return false;
     }
 
@@ -170,45 +171,52 @@ public class LibraryManagerEF : ILibraryManager
 
     public Model.Loan? CreateLoan(string isbn, long userId, DateOnly date)
     {
-        LibraryContext context = new LibraryContext(dbContextOptions);
-        EntityEntry<Loan> newLoan = context.Loans
-            .Add(new Loan()
-            {
-                Isbn = isbn,
-                UserId = (long)userId,
-                Date = date,
-            });
-        int ret = context.SaveChanges();
-        
-        if(ret == 1)
+        try
         {
-            context.Entry(newLoan.Entity).Reference(e => e.IsbnNavigation).Load();
-            context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Publisher).Load();
-            context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Authour).Load();
-            
-            return new Model.Loan
-            {
-                LoanId = newLoan.Entity.LoanId,
-                UserId = newLoan.Entity.UserId,
-                Date = newLoan.Entity.Date,
-                Book = new Model.Book()
+            LibraryContext context = new LibraryContext(dbContextOptions);
+            EntityEntry<Loan> newLoan = context.Loans
+                .Add(new Loan()
                 {
-                    Isbn = newLoan.Entity.Isbn,
-                    Title = newLoan.Entity.IsbnNavigation.Title,
-                    Authour = newLoan.Entity.IsbnNavigation.Authour.Authour1,
-                    Publisher = newLoan.Entity.IsbnNavigation.Publisher.Publisher1,
-                    ImgUrl = newLoan.Entity.IsbnNavigation.ImgUrl,
-                },
-            };
+                    Isbn = isbn,
+                    UserId = (long)userId,
+                    Date = date,
+                });
+            int ret = context.SaveChanges();
+
+            if (ret == 1)
+            {
+                context.Entry(newLoan.Entity).Reference(e => e.IsbnNavigation).Load();
+                context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Publisher).Load();
+                context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Authour).Load();
+
+                return new Model.Loan
+                {
+                    LoanId = newLoan.Entity.LoanId,
+                    UserId = newLoan.Entity.UserId,
+                    Date = newLoan.Entity.Date,
+                    Book = new Model.Book()
+                    {
+                        Isbn = newLoan.Entity.Isbn,
+                        Title = newLoan.Entity.IsbnNavigation.Title,
+                        Authour = newLoan.Entity.IsbnNavigation.Authour.Authour1,
+                        Publisher = newLoan.Entity.IsbnNavigation.Publisher.Publisher1,
+                        ImgUrl = newLoan.Entity.IsbnNavigation.ImgUrl,
+                    },
+                };
+            }
+        }
+        catch (DbUpdateException e)
+        {
+            Console.WriteLine(e);
         }
         return null;
     }
-    
+
     public bool OwnsLoan(long loanId, long userId)
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
         Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == loanId && l.UserId == userId);
-        if(loan == null) return false;
+        if (loan == null) return false;
         return true;
     }
 
@@ -221,15 +229,15 @@ public class LibraryManagerEF : ILibraryManager
             context.Loans.Remove(loan);
         }
         int ret = context.SaveChanges();
-        if(ret == 1) return true;
+        if (ret == 1) return true;
         return false;
     }
-    
+
     public bool HasActiveLoan(string isbn)
     {
         LibraryContext context = new LibraryContext(dbContextOptions);
         Loan? loan = context.Loans.FirstOrDefault(l => l.Isbn == isbn);
-        if(loan == null) return false;
+        if (loan == null) return false;
         return true;
     }
 }

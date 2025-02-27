@@ -380,5 +380,15 @@ public class LibraryManagerEFTests
         Assert.That(createdLoan.Book.Isbn, Is.EqualTo(loan.Isbn));
     }
 
- 
+    [Test]
+    public void CreateLoan_Invalid_NonExistingBook()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long testUserId = 1;
+        string testUserISBN = "nonExistingISBN";
+        DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
+        library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
+        Assert.That(createdLoan, Is.Null);
+    }
+    
 }
