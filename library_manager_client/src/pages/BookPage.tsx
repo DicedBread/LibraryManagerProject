@@ -104,7 +104,7 @@ function BookModule({ book }: { book: Book }) {
             return;
         }
 
-        const url: string = `${import.meta.env.VITE_SERVER_DOMAIN}/api/Loans/loan/${book.id}`;
+        const url: string = `${import.meta.env.VITE_SERVER_DOMAIN}/api/Loans/loan/${book.isbn}`;
         fetch(url, { method: "POST" })
             .then((res) => {
                 switch (res.status) {
@@ -164,7 +164,7 @@ function BookModule({ book }: { book: Book }) {
                         <p>{book.authour}</p>
                     </Box>
                     <Stack alignSelf={"flex-end"}>
-                        <Button onClick={() => HandleLoan(book.id)} variant={"contained"} sx={{ width: "100px" }}>Loan</Button>
+                        <Button onClick={() => HandleLoan(book.Isbn)} variant={"contained"} sx={{ width: "100px" }}>Loan</Button>
                     </Stack>
                 </Stack>
             </Stack>
