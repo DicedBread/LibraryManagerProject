@@ -27,8 +27,8 @@ public class LibraryManagerEF : ILibraryManager
         {
             Isbn = b.Isbn,
             Title = b.Title,
-            Authour = b.Authour.Authour1,
-            Publisher = b.Publisher.Publisher1,
+            Authour = b.Authour.Name,
+            Publisher = b.Publisher.Name,
             ImgUrl = b.ImgUrl
         };
     }
@@ -47,8 +47,8 @@ public class LibraryManagerEF : ILibraryManager
                 {
                     Isbn = e.Isbn,
                     Title = e.Title,
-                    Authour = e.Authour.Authour1,
-                    Publisher = e.Publisher.Publisher1,
+                    Authour = e.Authour.Name,
+                    Publisher = e.Publisher.Name,
                     ImgUrl = e.ImgUrl,
                 };
             }).ToList();
@@ -73,8 +73,8 @@ public class LibraryManagerEF : ILibraryManager
                 {
                     Isbn = e.Isbn,
                     Title = e.Title,
-                    Authour = e.Authour.Authour1,
-                    Publisher = e.Publisher.Publisher1,
+                    Authour = e.Authour.Name,
+                    Publisher = e.Publisher.Name,
                     ImgUrl = e.ImgUrl,
                 };
             }).ToList();
@@ -137,8 +137,8 @@ public class LibraryManagerEF : ILibraryManager
                     {
                         Isbn = l.IsbnNavigation.Isbn,
                         Title = l.IsbnNavigation.Title,
-                        Authour = l.IsbnNavigation.Authour.Authour1,
-                        Publisher = l.IsbnNavigation.Publisher.Publisher1,
+                        Authour = l.IsbnNavigation.Authour.Name,
+                        Publisher = l.IsbnNavigation.Publisher.Name,
                         ImgUrl = l.IsbnNavigation.ImgUrl,
                     },
                 };
@@ -162,8 +162,8 @@ public class LibraryManagerEF : ILibraryManager
             {
                 Isbn = loan.IsbnNavigation.Isbn,
                 Title = loan.IsbnNavigation.Title,
-                Authour = loan.IsbnNavigation.Authour.Authour1,
-                Publisher = loan.IsbnNavigation.Publisher.Publisher1,
+                Authour = loan.IsbnNavigation.Authour.Name,
+                Publisher = loan.IsbnNavigation.Publisher.Name,
                 ImgUrl = loan.IsbnNavigation.ImgUrl,
             },
         };
@@ -198,8 +198,8 @@ public class LibraryManagerEF : ILibraryManager
                     {
                         Isbn = newLoan.Entity.Isbn,
                         Title = newLoan.Entity.IsbnNavigation.Title,
-                        Authour = newLoan.Entity.IsbnNavigation.Authour.Authour1,
-                        Publisher = newLoan.Entity.IsbnNavigation.Publisher.Publisher1,
+                        Authour = newLoan.Entity.IsbnNavigation.Authour.Name,
+                        Publisher = newLoan.Entity.IsbnNavigation.Publisher.Name,
                         ImgUrl = newLoan.Entity.IsbnNavigation.ImgUrl,
                     },
                 };

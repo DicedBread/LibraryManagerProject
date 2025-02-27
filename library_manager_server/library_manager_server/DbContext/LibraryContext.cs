@@ -39,7 +39,7 @@ public partial class LibraryContext : DbContext
             entity.ToTable("authours");
 
             entity.Property(e => e.AuthourId).HasColumnName("authour_id");
-            entity.Property(e => e.Authour1)
+            entity.Property(e => e.Name)
                 .HasMaxLength(500)
                 .HasColumnName("authour");
         });
@@ -117,7 +117,7 @@ public partial class LibraryContext : DbContext
             entity.ToTable("publishers");
 
             entity.Property(e => e.PublisherId).HasColumnName("publisher_id");
-            entity.Property(e => e.Publisher1)
+            entity.Property(e => e.Name)
                 .HasMaxLength(200)
                 .HasColumnName("publisher");
         });

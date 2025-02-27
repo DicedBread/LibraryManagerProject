@@ -32,7 +32,7 @@ namespace library_manager_server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("AuthourId"));
 
-                    b.Property<string>("Authour1")
+                    b.Property<string>("Name")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("authour");
@@ -134,7 +134,7 @@ namespace library_manager_server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("PublisherId"));
 
-                    b.Property<string>("Publisher1")
+                    b.Property<string>("Name")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("publisher");

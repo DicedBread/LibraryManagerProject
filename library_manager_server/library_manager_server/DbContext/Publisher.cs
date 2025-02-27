@@ -7,7 +7,7 @@ public partial class Publisher
 {
     public long PublisherId { get; set; }
 
-    public string? Publisher1 { get; set; }
+    public string? Name { get; set; }
 
     public virtual ICollection<Book> Books { get; set; } = new List<Book>();
 }

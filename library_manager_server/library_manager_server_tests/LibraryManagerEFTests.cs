@@ -81,7 +81,7 @@ public class LibraryManagerEFTests
         LibraryContext context = new LibraryContext(_options.Options);
         for (int i = 0; i < numOfAuthors; i++)
         {
-            var author = new Authour { Authour1 = $"Authour_{i}" };
+            var author = new Authour { Name = $"Authour_{i}" };
             context.Authours.Add(author);
             _authours.Add(author);
         }
@@ -89,7 +89,7 @@ public class LibraryManagerEFTests
 
         for (int i = 0; i < numOfPublishers; i++)
         {
-            var publisher = new Publisher { Publisher1 = $"Publisher_{i}" };
+            var publisher = new Publisher { Name = $"Publisher_{i}" };
             context.Publishers.Add(publisher);
             _publishers.Add(publisher);
         }
@@ -180,8 +180,8 @@ public class LibraryManagerEFTests
                 {
                     Isbn = _books[0].Isbn,
                     Title = _books[0].Title,
-                    Authour = _authours[0].Authour1,
-                    Publisher = _publishers[0].Publisher1,
+                    Authour = _authours[0].Name,
+                    Publisher = _publishers[0].Name,
                     ImgUrl = _books[0].ImgUrl,
                 }
             ).UsingPropertiesComparer()
@@ -212,8 +212,8 @@ public class LibraryManagerEFTests
         {
             Isbn = _books[0].Isbn,
             Title = _books[0].Title,
-            Authour = _authours[0].Authour1,
-            Publisher = _publishers[0].Publisher1,
+            Authour = _authours[0].Name,
+            Publisher = _publishers[0].Name,
             ImgUrl = _books[0].ImgUrl,
         };
 
