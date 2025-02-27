@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Diagnostics.Eventing.Reader;
+using library_manager_server.Persistency;
 
 internal class Program
 {
@@ -54,9 +56,12 @@ internal class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddSingleton(dataSource);
-        builder.Services.AddSingleton<ILibraryManager, LibraryManager>();
+        builder.Services.AddScoped<ILibraryManager, LibraryManagerEF>();
         builder.Services.AddSingleton<ISessionHandler, SessionHandler>();
         builder.Services.AddSingleton<IAuthorizationHandler, SessionAuthorizationHandler>();
+        builder.Services.AddDbContext<LibraryContext>(options => {
+            options.UseNpgsql(conStrB.ConnectionString);
+        });
         builder.Services.AddLogging();
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>

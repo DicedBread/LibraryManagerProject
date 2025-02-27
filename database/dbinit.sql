@@ -21,6 +21,18 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- Name: __EFMigrationsHistory; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL
+);
+
+
+ALTER TABLE public."__EFMigrationsHistory" OWNER TO postgres;
+
+--
 -- Name: authours; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -84,10 +96,10 @@ CREATE TABLE public.loans (
 ALTER TABLE public.loans OWNER TO postgres;
 
 --
--- Name: loans_loan_id_seq1; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: loans_loan_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.loans_loan_id_seq1
+CREATE SEQUENCE public.loans_loan_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -95,13 +107,13 @@ CREATE SEQUENCE public.loans_loan_id_seq1
     CACHE 1;
 
 
-ALTER SEQUENCE public.loans_loan_id_seq1 OWNER TO postgres;
+ALTER SEQUENCE public.loans_loan_id_seq OWNER TO postgres;
 
 --
--- Name: loans_loan_id_seq1; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: loans_loan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.loans_loan_id_seq1 OWNED BY public.loans.loan_id;
+ALTER SEQUENCE public.loans_loan_id_seq OWNED BY public.loans.loan_id;
 
 
 --
@@ -183,7 +195,7 @@ ALTER TABLE ONLY public.authours ALTER COLUMN authour_id SET DEFAULT nextval('pu
 -- Name: loans loan_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.loans ALTER COLUMN loan_id SET DEFAULT nextval('public.loans_loan_id_seq1'::regclass);
+ALTER TABLE ONLY public.loans ALTER COLUMN loan_id SET DEFAULT nextval('public.loans_loan_id_seq'::regclass);
 
 
 --
@@ -198,6 +210,15 @@ ALTER TABLE ONLY public.publishers ALTER COLUMN publisher_id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.users_user_id_seq'::regclass);
+
+
+--
+-- Data for Name: __EFMigrationsHistory; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") FROM stdin;
+20250213012721_InitCreate	9.0.2
+\.
 
 
 --
@@ -312,10 +333,10 @@ SELECT pg_catalog.setval('public.authours_authour_id_seq', 20, true);
 
 
 --
--- Name: loans_loan_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: postgres
+-- Name: loans_loan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.loans_loan_id_seq1', 2, true);
+SELECT pg_catalog.setval('public.loans_loan_id_seq', 2, true);
 
 
 --
@@ -330,6 +351,14 @@ SELECT pg_catalog.setval('public.publishers_publisher_id_seq', 20, true);
 --
 
 SELECT pg_catalog.setval('public.users_user_id_seq', 2, true);
+
+
+--
+-- Name: __EFMigrationsHistory PK___EFMigrationsHistory; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."__EFMigrationsHistory"
+    ADD CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId");
 
 
 --

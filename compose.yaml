@@ -25,7 +25,7 @@ services:
   db:
     container_name: library_manager_database
     build: database
-    attach: false
+    attach: true
     ports:
       - "5432:5432"
     environment:

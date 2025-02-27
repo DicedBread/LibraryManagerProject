@@ -1,7 +1,7 @@
 ﻿
 using System.Security.Claims;
 using library_manager_server.Controllers;
-using library_manager_server.model;
+using library_manager_server.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -22,12 +22,12 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<List<Loan>>> GetLoans()
+    public async Task<ActionResult<List<Model.Loan>>> GetLoans()
     {   
         _logger.LogInformation("GetLoans called");
         string? sessionId = _sessionHandler.GetSession(HttpContext);
         if(sessionId == null) return Unauthorized();
-        double? userId = _sessionHandler.GetUserId(sessionId);
+        long? userId = _sessionHandler.GetUserId(sessionId);
         if(userId == null) return Unauthorized();
         return _libraryManager.GetLoans(userId.Value);
     }
@@ -35,7 +35,7 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     [HttpGet("{loanId:double}", Name = GetLoanName),]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Loan>> GetLoan(double loanId)
+    public async Task<ActionResult<Model.Loan>> GetLoan(long loanId)
     {
         _logger.LogInformation("GetLoan called");
         string? providedSessionId = _sessionHandler.GetSession(HttpContext);
@@ -44,14 +44,14 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
             _logger.LogDebug("No session found");
             return Unauthorized();
         }
-        double? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
+        long? userIdOrnull = _sessionHandler.GetUserId(providedSessionId);
         if (userIdOrnull == null)
         {
             _logger.LogDebug("No user associated with this session");
             return Unauthorized();
         } 
         if(!_libraryManager.OwnsLoan(userIdOrnull.Value, loanId)) return Forbid();
-        Loan? loan = _libraryManager.GetLoan(loanId);
+        Model.Loan? loan = _libraryManager.GetLoan(loanId);
         if (loan == null)
         {
             _logger.LogDebug("No loan associated with this loanId");
@@ -70,21 +70,29 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
         _logger.LogInformation("Creating loan {isbn}", isbn);
         string? sessionId = _sessionHandler.GetSession(HttpContext);
         if(sessionId == null) return Unauthorized();
-        double? userIdOrnull = _sessionHandler.GetUserId(sessionId);
+        long? userIdOrnull = _sessionHandler.GetUserId(sessionId);
         if (userIdOrnull == null){ return Unauthorized(); } 
-        double userid = userIdOrnull.Value;
+        long userid = userIdOrnull.Value;
         if (_libraryManager.HasActiveLoan(isbn))
         {
             _logger.LogInformation($"Loan {isbn} already active");
             return Forbid();
         }
 
-        Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateTime.Now);
+        Model.Loan? loan = _libraryManager.CreateLoan(isbn, userid, DateOnly.FromDateTime(DateTime.Now));
         if (loan != null)
         {
             _logger.LogInformation($"Created loan {isbn}");
-            string? r = Url.Link(GetLoanName, new { loanId = loan.LoanId });
-            return Created(r, loan);
+            var builder = new UriBuilder();
+            builder.Scheme = Request.Scheme;
+            builder.Host = Request.Host.Host;
+            if (Request.Host.Port != null)
+            {
+                builder.Port = Request.Host.Port.Value;
+            }
+            builder.Path = "api/loans/" + loan.LoanId;
+            Uri uri = builder.Uri;
+            return Created(uri, loan);
         }
         return BadRequest();
     }
@@ -94,12 +102,12 @@ public class Loans(ILibraryManager libraryManager, ILogger<Loans> logger, ISessi
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> DeleteLoans(double loanId)
+    public async Task<IActionResult> DeleteLoans(long loanId)
     {
         _logger.LogInformation("Deleting loan {loanId}", loanId);
         string? sessionId = _sessionHandler.GetSession(HttpContext);
         if(sessionId == null) return Unauthorized();
-        double? userId = _sessionHandler.GetUserId(sessionId);
+        long? userId = _sessionHandler.GetUserId(sessionId);
         if (userId == null){ return Unauthorized(); } 
         bool ret = _libraryManager.OwnsLoan(loanId, userId.Value);
         if(ret == false) return Forbid();

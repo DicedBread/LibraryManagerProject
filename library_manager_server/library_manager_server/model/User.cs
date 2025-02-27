@@ -1,4 +1,4 @@
-﻿namespace library_manager_server.model
+﻿namespace library_manager_server.Model
 {
     public class User
     {

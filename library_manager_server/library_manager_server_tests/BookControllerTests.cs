@@ -1,4 +1,4 @@
-﻿using library_manager_server.model;
+﻿using library_manager_server.Model;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace library_manager_server_tests
                 // mockDB.Setup(m => m.GetBook("jim")).Returns(testOut);
 
 
-            Assert.False(true);
+            Assert.Fail();
         }
     }
 }
