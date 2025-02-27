@@ -412,5 +412,14 @@ public class LibraryManagerEFTests
         Assert.That(ownsLoan, Is.True);
     }
     
+    [Test]
+    public void OwnsLoan_Invalid()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long testUserId = 1;
+        long invalidLoanId = 999;
+        bool ownsLoan = lm.OwnsLoan(testUserId, invalidLoanId);
+        Assert.That(ownsLoan, Is.False);
+    }
 
 }
