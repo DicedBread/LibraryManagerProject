@@ -1,4 +1,4 @@
-﻿namespace library_manager_server.Model
+﻿namespace library_manager_server.ClientContext
 {
     public class User
     {

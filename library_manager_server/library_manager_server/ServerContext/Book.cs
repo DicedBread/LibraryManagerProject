@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using NpgsqlTypes;
 
-namespace library_manager_server;
+namespace library_manager_server.ServerContext;
 
 public partial class Book
 {

@@ -1,4 +1,4 @@
-﻿using library_manager_server.Model;
+﻿using library_manager_server.ClientContext;
 using Microsoft.AspNetCore.Identity;
 
 namespace library_manager_server;
@@ -11,14 +11,14 @@ public interface ILibraryManager
     /// <param name="limit">number of books to retrive</param>
     /// <param name="offset">offset to start counting limit</param>
     /// <returns></returns>
-    List<Model.Book> GetBooks(int limit, int offset);
+    List<ClientContext.Book> GetBooks(int limit, int offset);
 
     /// <summary>
     /// get book with isbn number 
     /// </summary>
     /// <param name="isbn">isbn of book to retrieve</param>
     /// <returns>book with isbn number or null if not book assosiated</returns>
-    Model.Book? GetBook(string isbn);
+    ClientContext.Book? GetBook(string isbn);
 
     /// <summary>
     /// check if user has entered valid password
@@ -38,8 +38,8 @@ public interface ILibraryManager
     bool AddUser(string email, string password, string username);
 
     long? GetUserId(string email);
-    List<Model.Loan> GetLoans(long userId);
-    Model.Loan? GetLoan(long loanId);
+    List<ClientContext.Loan> GetLoans(long userId);
+    ClientContext.Loan? GetLoan(long loanId);
 
     /// <summary>
     /// create loan 
@@ -57,7 +57,7 @@ public interface ILibraryManager
     /// <param name="userId">user id</param>
     /// <param name="date">date of creation</param>
     /// <returns>loan if succsessful otherwise null</returns>
-    Model.Loan? CreateLoan(string isbn, long userId, DateOnly date);
+    ClientContext.Loan? CreateLoan(string isbn, long userId, DateOnly date);
 
     /// <summary>
     /// 
@@ -82,5 +82,5 @@ public interface ILibraryManager
     /// <param name="limit"></param>
     /// <param name="offset"></param>
     /// <returns></returns>
-    List<Model.Book> SearchBooks(string search, int limit, int offset);
+    List<ClientContext.Book> SearchBooks(string search, int limit, int offset);
 }

@@ -2,7 +2,7 @@ using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 using library_manager_server;
 using library_manager_server.Persistency;
-
+using library_manager_server.ServerContext;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
@@ -171,12 +171,12 @@ public class LibraryManagerEFTests
     public void GetBooks_Valid()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        List<library_manager_server.Model.Book> ret = lm.GetBooks(3, 0);
+        List<library_manager_server.ClientContext.Book> ret = lm.GetBooks(3, 0);
 
         Assert.That(ret.Count == 3);
         Assert.That(ret[0],
             Is.EqualTo(
-                new library_manager_server.Model.Book
+                new library_manager_server.ClientContext.Book
                 {
                     Isbn = _books[0].Isbn,
                     Title = _books[0].Title,
@@ -194,12 +194,12 @@ public class LibraryManagerEFTests
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         Assert.Throws<ArgumentException>(() =>
         {
-            List<library_manager_server.Model.Book> ret = lm.GetBooks(-3, 0);
+            List<library_manager_server.ClientContext.Book> ret = lm.GetBooks(-3, 0);
         });
 
         Assert.Throws<ArgumentException>(() =>
         {
-            List<library_manager_server.Model.Book> ret = lm.GetBooks(0, -1);
+            List<library_manager_server.ClientContext.Book> ret = lm.GetBooks(0, -1);
         });
     }
 
@@ -208,7 +208,7 @@ public class LibraryManagerEFTests
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
 
-        library_manager_server.Model.Book book = new library_manager_server.Model.Book
+        library_manager_server.ClientContext.Book book = new library_manager_server.ClientContext.Book
         {
             Isbn = _books[0].Isbn,
             Title = _books[0].Title,
@@ -217,7 +217,7 @@ public class LibraryManagerEFTests
             ImgUrl = _books[0].ImgUrl,
         };
 
-        library_manager_server.Model.Book? ret = lm.GetBook(book.Isbn);
+        library_manager_server.ClientContext.Book? ret = lm.GetBook(book.Isbn);
         Assert.That(ret, Is.EqualTo(book).UsingPropertiesComparer());
     }
 
@@ -225,7 +225,7 @@ public class LibraryManagerEFTests
     public void GetBook_Invalid_NoMatchingBook()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        library_manager_server.Model.Book? ret = lm.GetBook("invalidISBN");
+        library_manager_server.ClientContext.Book? ret = lm.GetBook("invalidISBN");
         Assert.That(ret, Is.Null);
     }
 
@@ -319,7 +319,7 @@ public class LibraryManagerEFTests
     public void GetLoans_Valid()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        List<library_manager_server.Model.Loan> loans = lm.GetLoans(1);
+        List<library_manager_server.ClientContext.Loan> loans = lm.GetLoans(1);
         Assert.That(loans.Count, Is.EqualTo(2));
         for (int i = 0; i < loans.Count; i++)
         {
@@ -333,7 +333,7 @@ public class LibraryManagerEFTests
     public void GetLoans_Invalid_UserDoesNotExist()
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        List<library_manager_server.Model.Loan> loans = lm.GetLoans(20);
+        List<library_manager_server.ClientContext.Loan> loans = lm.GetLoans(20);
         Assert.That(loans.Count, Is.LessThanOrEqualTo(0));
     }
 
@@ -342,7 +342,7 @@ public class LibraryManagerEFTests
     {
         long testId = 1;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        library_manager_server.Model.Loan? loan = lm.GetLoan(testId);
+        library_manager_server.ClientContext.Loan? loan = lm.GetLoan(testId);
         Assert.That(loan, Is.Not.Null);
         Assert.That(loan.LoanId, Is.EqualTo(1));
         Assert.That(loan.Date, Is.EqualTo(DateOnly.FromDateTime(DateTime.MinValue)));
@@ -353,7 +353,7 @@ public class LibraryManagerEFTests
     {
         long NoLoanTestId = 200;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
-        library_manager_server.Model.Loan? loan = lm.GetLoan(NoLoanTestId);
+        library_manager_server.ClientContext.Loan? loan = lm.GetLoan(NoLoanTestId);
         Assert.That(loan, Is.Null);
     }
 
@@ -364,7 +364,7 @@ public class LibraryManagerEFTests
         long testUserId = 1;
         string testUserISBN = _books[5].Isbn;
         DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
-        library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
+        library_manager_server.ClientContext.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
         Assert.That(createdLoan, Is.Not.Null);
         Assert.That(createdLoan.Book.Isbn, Is.EqualTo(testUserISBN));
         Assert.That(createdLoan.UserId, Is.EqualTo(testUserId));
@@ -390,7 +390,7 @@ public class LibraryManagerEFTests
         long testUserId = 1;
         string testUserISBN = "nonExistingISBN";
         DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
-        library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
+        library_manager_server.ClientContext.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
         Assert.That(createdLoan, Is.Null);
     }
 
@@ -401,7 +401,7 @@ public class LibraryManagerEFTests
         long nonExistingUserId = 999;
         string testUserISBN = _books[0].Isbn;
         DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
-        library_manager_server.Model.Loan? createdLoan = lm.CreateLoan(testUserISBN, nonExistingUserId, testDate);
+        library_manager_server.ClientContext.Loan? createdLoan = lm.CreateLoan(testUserISBN, nonExistingUserId, testDate);
         Assert.That(createdLoan, Is.Null);
     }
 

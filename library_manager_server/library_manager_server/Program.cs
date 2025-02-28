@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Diagnostics.Eventing.Reader;
 using library_manager_server.Persistency;
+using library_manager_server.ServerContext;
 
 internal class Program
 {

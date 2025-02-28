@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace library_manager_server;
+namespace library_manager_server.ServerContext;
 
 public partial class User
 {
