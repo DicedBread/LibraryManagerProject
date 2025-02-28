@@ -25,14 +25,8 @@ public class LibraryManagerEF : ILibraryManager
             .FirstOrDefault(e => e.Isbn == isbn);
 
         if (b == null) return null;
-        return new ClientContext.Book
-                {
-                    Isbn = b.Isbn,
-                    Title = b.Title,
-                    Authour = b.Authour.Name,
-                    Publisher = b.Publisher.Name,
-                    ImgUrl = b.ImgUrl,
-                };;
+        return new ClientContext.Book(b);
+                
     }
 
     public List<ClientContext.Book> GetBooks(int limit, int offset)
