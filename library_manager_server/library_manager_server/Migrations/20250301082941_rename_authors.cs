@@ -53,6 +53,8 @@ namespace library_manager_server.Migrations
                 column: "author_id",
                 principalTable: "authors",
                 principalColumn: "author_id");
+
+            migrationBuilder.Sql("ALTER SEQUENCE authours_authour_id_seq RENAME TO authors_author_id_seq;");
         }
 
         /// <inheritdoc />
@@ -101,6 +103,9 @@ namespace library_manager_server.Migrations
                 column: "authour_id",
                 principalTable: "authours",
                 principalColumn: "authour_id");
+
+            migrationBuilder.Sql("ALTER SEQUENCE authors_author_id_seq RENAME TO authours_authour_id_seq;");
+            
         }
     }
 }

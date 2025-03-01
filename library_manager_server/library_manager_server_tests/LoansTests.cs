@@ -40,7 +40,7 @@ public class LoansTests
                 {
                     Isbn = "a" + i.ToString(),
                     Title = "text book",
-                    Authour = "bob",
+                    Author = "bob",
                     Publisher = "testBooks",
                     ImgUrl = "test.com",
                 },

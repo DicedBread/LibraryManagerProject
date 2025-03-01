@@ -81,7 +81,7 @@ public class LibraryManagerEFTests
         LibraryContext context = new LibraryContext(_options.Options);
         for (int i = 0; i < numOfAuthors; i++)
         {
-            var author = new Author { Name = $"Authour_{i}" };
+            var author = new Author { Name = $"Author_{i}" };
             context.Authors.Add(author);
             _authors.Add(author);
         }
@@ -103,6 +103,7 @@ public class LibraryManagerEFTests
                 Title = "Book_" + i.ToString(),
                 ImgUrl = "imgUrl_" + i.ToString(),
                 AuthorId = (long)Math.Clamp(Math.Round(((numOfBooks / numOfAuthors) * 0.1) * i, 0), 0, numOfAuthors),
+                NumAvailable = 1,
                 PublisherId = (long)Math.Clamp(Math.Round(((numOfBooks / numOfPublishers) * 0.1) * i, 0), 0, numOfPublishers),
                 TextSearch = null,
             };
@@ -145,7 +146,7 @@ public class LibraryManagerEFTests
         context.Authors.RemoveRange(context.Authors.ToList());
         context.Publishers.RemoveRange(context.Publishers.ToList());
 
-        context.Database.ExecuteSql($"SELECT setval('authours_authour_id_seq', 1, false)");
+        context.Database.ExecuteSql($"SELECT setval('authors_author_id_seq', 1, false)");
         context.Database.ExecuteSql($"SELECT setval('publishers_publisher_id_seq', 1, false)");
         context.Database.ExecuteSql($"SELECT setval('users_user_id_seq', 1, false)");
         context.Database.ExecuteSql($"SELECT setval('loans_loan_id_seq', 1, false)");
@@ -180,8 +181,9 @@ public class LibraryManagerEFTests
                 {
                     Isbn = _books[0].Isbn,
                     Title = _books[0].Title,
-                    Authour = _authors[0].Name,
+                    Author = _authors[0].Name,
                     Publisher = _publishers[0].Name,
+                    NumAvailable = _books[0].NumAvailable,
                     ImgUrl = _books[0].ImgUrl,
                 }
             ).UsingPropertiesComparer()
@@ -212,8 +214,9 @@ public class LibraryManagerEFTests
         {
             Isbn = _books[0].Isbn,
             Title = _books[0].Title,
-            Authour = _authors[0].Name,
+            Author = _authors[0].Name,
             Publisher = _publishers[0].Name,
+            NumAvailable = _books[0].NumAvailable,
             ImgUrl = _books[0].ImgUrl,
         };
 
