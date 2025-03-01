@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 16.2 (Debian 16.2-1.pgdg120+2)
--- Dumped by pg_dump version 16.2
+-- Dumped by pg_dump version 16.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -38,7 +38,7 @@ ALTER TABLE public."__EFMigrationsHistory" OWNER TO postgres;
 
 CREATE TABLE public.authours (
     authour_id bigint NOT NULL,
-    authour character varying(500)
+    authour character varying(500) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -71,8 +71,8 @@ ALTER SEQUENCE public.authours_authour_id_seq OWNED BY public.authours.authour_i
 
 CREATE TABLE public.books (
     isbn character varying(50) NOT NULL,
-    title character varying(500),
-    img_url character varying(200),
+    title character varying(500) DEFAULT ''::character varying NOT NULL,
+    img_url character varying(200) DEFAULT ''::character varying NOT NULL,
     authour_id bigint DEFAULT 1 NOT NULL,
     publisher_id bigint DEFAULT 1 NOT NULL,
     text_search tsvector GENERATED ALWAYS AS (to_tsvector('english'::regconfig, (title)::text)) STORED
@@ -218,6 +218,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN user_id SET DEFAULT nextval('public.u
 
 COPY public."__EFMigrationsHistory" ("MigrationId", "ProductVersion") FROM stdin;
 20250213012721_InitCreate	9.0.2
+20250228062857_nullChecks	9.0.2
 \.
 
 

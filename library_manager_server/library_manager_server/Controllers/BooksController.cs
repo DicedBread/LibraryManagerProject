@@ -1,4 +1,4 @@
-﻿using library_manager_server.Model;
+﻿using library_manager_server.ClientContext;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,9 +20,9 @@ namespace library_manager_server.Controllers
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<IEnumerable<Model.Book>> GetBooks([FromQuery] string? search, [FromQuery] int limit = 20,[FromQuery] int offset = 0)
+        public ActionResult<IEnumerable<ClientContext.Book>> GetBooks([FromQuery] string? search, [FromQuery] int limit = 20,[FromQuery] int offset = 0)
         {
-            List<Model.Book> books;
+            List<ClientContext.Book> books;
             if (limit <= 0 || offset < 0) return BadRequest();
             if (search == null)
             {
@@ -40,9 +40,9 @@ namespace library_manager_server.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<Model.Book> GetBook(string isbn)
+        public ActionResult<ClientContext.Book> GetBook(string isbn)
         {
-            Model.Book? book = _libraryManager.GetBook(isbn);
+            ClientContext.Book? book = _libraryManager.GetBook(isbn);
             if(book == null) return NotFound();
             return book;
         }

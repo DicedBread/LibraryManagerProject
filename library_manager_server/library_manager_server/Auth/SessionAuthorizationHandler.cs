@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 using library_manager_server.Controllers;
-using library_manager_server.Model;
+using library_manager_server.ClientContext;
 using Microsoft.AspNetCore.Authorization;
 
 namespace library_manager_server

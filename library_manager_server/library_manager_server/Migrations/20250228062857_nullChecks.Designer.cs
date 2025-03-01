@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
-using library_manager_server;
 using library_manager_server.ServerContext;
 
 #nullable disable
@@ -14,8 +13,8 @@ using library_manager_server.ServerContext;
 namespace library_manager_server.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20250213012721_InitCreate")]
-    partial class InitCreate
+    [Migration("20250228062857_nullChecks")]
+    partial class nullChecks
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,7 +26,7 @@ namespace library_manager_server.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("library_manager_server.Authour", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Authour", b =>
                 {
                     b.Property<long>("AuthourId")
                         .ValueGeneratedOnAdd()
@@ -37,6 +36,7 @@ namespace library_manager_server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("AuthourId"));
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("authour");
@@ -47,7 +47,7 @@ namespace library_manager_server.Migrations
                     b.ToTable("authours", (string)null);
                 });
 
-            modelBuilder.Entity("library_manager_server.Book", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Book", b =>
                 {
                     b.Property<string>("Isbn")
                         .HasMaxLength(50)
@@ -61,6 +61,7 @@ namespace library_manager_server.Migrations
                         .HasColumnName("authour_id");
 
                     b.Property<string>("ImgUrl")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("img_url");
@@ -78,6 +79,7 @@ namespace library_manager_server.Migrations
                         .HasComputedColumnSql("to_tsvector('english'::regconfig, (title)::text)", true);
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
                         .HasColumnName("title");
@@ -96,7 +98,7 @@ namespace library_manager_server.Migrations
                     b.ToTable("books", (string)null);
                 });
 
-            modelBuilder.Entity("library_manager_server.Loan", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Loan", b =>
                 {
                     b.Property<long>("LoanId")
                         .ValueGeneratedOnAdd()
@@ -129,7 +131,7 @@ namespace library_manager_server.Migrations
                     b.ToTable("loans", (string)null);
                 });
 
-            modelBuilder.Entity("library_manager_server.Publisher", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Publisher", b =>
                 {
                     b.Property<long>("PublisherId")
                         .ValueGeneratedOnAdd()
@@ -139,6 +141,7 @@ namespace library_manager_server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("PublisherId"));
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
                         .HasColumnName("publisher");
@@ -149,7 +152,7 @@ namespace library_manager_server.Migrations
                     b.ToTable("publishers", (string)null);
                 });
 
-            modelBuilder.Entity("library_manager_server.User", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.User", b =>
                 {
                     b.Property<long>("UserId")
                         .ValueGeneratedOnAdd()
@@ -185,15 +188,15 @@ namespace library_manager_server.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("library_manager_server.Book", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Book", b =>
                 {
-                    b.HasOne("library_manager_server.Authour", "Authour")
+                    b.HasOne("library_manager_server.ServerContext.Authour", "Authour")
                         .WithMany("Books")
                         .HasForeignKey("AuthourId")
                         .IsRequired()
                         .HasConstraintName("fk_authours");
 
-                    b.HasOne("library_manager_server.Publisher", "Publisher")
+                    b.HasOne("library_manager_server.ServerContext.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
                         .IsRequired()
@@ -204,15 +207,15 @@ namespace library_manager_server.Migrations
                     b.Navigation("Publisher");
                 });
 
-            modelBuilder.Entity("library_manager_server.Loan", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Loan", b =>
                 {
-                    b.HasOne("library_manager_server.Book", "IsbnNavigation")
+                    b.HasOne("library_manager_server.ServerContext.Book", "IsbnNavigation")
                         .WithMany("Loans")
                         .HasForeignKey("Isbn")
                         .IsRequired()
                         .HasConstraintName("loans_isbn_fkey1");
 
-                    b.HasOne("library_manager_server.User", "User")
+                    b.HasOne("library_manager_server.ServerContext.User", "User")
                         .WithMany("Loans")
                         .HasForeignKey("UserId")
                         .IsRequired()
@@ -223,22 +226,22 @@ namespace library_manager_server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("library_manager_server.Authour", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Authour", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("library_manager_server.Book", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Book", b =>
                 {
                     b.Navigation("Loans");
                 });
 
-            modelBuilder.Entity("library_manager_server.Publisher", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.Publisher", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("library_manager_server.User", b =>
+            modelBuilder.Entity("library_manager_server.ServerContext.User", b =>
                 {
                     b.Navigation("Loans");
                 });

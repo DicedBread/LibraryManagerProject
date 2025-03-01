@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using NpgsqlTypes;
 
-namespace library_manager_server;
+namespace library_manager_server.ServerContext;
 
 public partial class Book
 {
     public string Isbn { get; set; } = null!;
 
-    public string? Title { get; set; }
+    public string Title { get; set; } = null!;
 
-    public string? ImgUrl { get; set; }
+    public string ImgUrl { get; set; } = null!;
 
     public long AuthourId { get; set; }
 
