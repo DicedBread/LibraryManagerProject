@@ -335,6 +335,8 @@ public class LibraryManagerEFTests
     [Test]
     public void GetLoans_Invalid_UserDoesNotExist()
     {
+        Assert.Fail("need to refactor to account for num available");
+
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         List<library_manager_server.ClientContext.Loan> loans = lm.GetLoans(20);
         Assert.That(loans.Count, Is.LessThanOrEqualTo(0));
@@ -343,6 +345,8 @@ public class LibraryManagerEFTests
     [Test]
     public void GetLoan_Valid()
     {
+        Assert.Fail("need to refactor to account for num available");
+
         long testId = 1;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         library_manager_server.ClientContext.Loan? loan = lm.GetLoan(testId);
@@ -354,6 +358,8 @@ public class LibraryManagerEFTests
     [Test]
     public void GetLoan_Invalid_LoanDoesnotExist()
     {
+        Assert.Fail("need to refactor to account for num available");
+
         long NoLoanTestId = 200;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         library_manager_server.ClientContext.Loan? loan = lm.GetLoan(NoLoanTestId);
@@ -363,6 +369,8 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Valid()
     {
+        Assert.Fail("need to refactor to account for num available");
+
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long testUserId = 1;
         string testUserISBN = _books[5].Isbn;
@@ -389,6 +397,8 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Invalid_NonExistingBook()
     {
+        Assert.Fail("need to refactor to account for num available");
+
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long testUserId = 1;
         string testUserISBN = "nonExistingISBN";
@@ -400,6 +410,8 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Invalid_NonExistingUser()
     {
+        Assert.Fail("need to refactor to account for num available");
+
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long nonExistingUserId = 999;
         string testUserISBN = _books[0].Isbn;
