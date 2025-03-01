@@ -11,7 +11,7 @@
         public Book(ServerContext.Book book){
             Isbn = book.Isbn;
             Title = book.Title;
-            Authour = book.Authour.Name;
+            Authour = book.Author.Name;
             Publisher = book.Publisher.Name;
             ImgUrl = book.ImgUrl;
         }    

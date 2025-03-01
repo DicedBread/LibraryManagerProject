@@ -63,7 +63,7 @@ public class LibraryManagerEFTests
         Console.WriteLine("db migrated");
     }
 
-    private List<Authour> _authours = [];
+    private List<Author> _authors = [];
     private List<Publisher> _publishers = [];
     private List<User> _users = [];
     private List<Book> _books = [];
@@ -81,9 +81,9 @@ public class LibraryManagerEFTests
         LibraryContext context = new LibraryContext(_options.Options);
         for (int i = 0; i < numOfAuthors; i++)
         {
-            var author = new Authour { Name = $"Authour_{i}" };
-            context.Authours.Add(author);
-            _authours.Add(author);
+            var author = new Author { Name = $"Authour_{i}" };
+            context.Authors.Add(author);
+            _authors.Add(author);
         }
         context.SaveChanges();
 
@@ -102,7 +102,7 @@ public class LibraryManagerEFTests
                 Isbn = "Isbn_" + i.ToString(),
                 Title = "Book_" + i.ToString(),
                 ImgUrl = "imgUrl_" + i.ToString(),
-                AuthourId = (long)Math.Clamp(Math.Round(((numOfBooks / numOfAuthors) * 0.1) * i, 0), 0, numOfAuthors),
+                AuthorId = (long)Math.Clamp(Math.Round(((numOfBooks / numOfAuthors) * 0.1) * i, 0), 0, numOfAuthors),
                 PublisherId = (long)Math.Clamp(Math.Round(((numOfBooks / numOfPublishers) * 0.1) * i, 0), 0, numOfPublishers),
                 TextSearch = null,
             };
@@ -142,7 +142,7 @@ public class LibraryManagerEFTests
         context.Loans.RemoveRange(context.Loans.ToList());
         context.Books.RemoveRange(context.Books.ToList());
         context.Users.RemoveRange(context.Users.ToList());
-        context.Authours.RemoveRange(context.Authours.ToList());
+        context.Authors.RemoveRange(context.Authors.ToList());
         context.Publishers.RemoveRange(context.Publishers.ToList());
 
         context.Database.ExecuteSql($"SELECT setval('authours_authour_id_seq', 1, false)");
@@ -156,7 +156,7 @@ public class LibraryManagerEFTests
         _users.Clear();
         _books.Clear();
         _publishers.Clear();
-        _authours.Clear();
+        _authors.Clear();
         Console.WriteLine("db container teardown completed");
     }
 
@@ -180,7 +180,7 @@ public class LibraryManagerEFTests
                 {
                     Isbn = _books[0].Isbn,
                     Title = _books[0].Title,
-                    Authour = _authours[0].Name,
+                    Authour = _authors[0].Name,
                     Publisher = _publishers[0].Name,
                     ImgUrl = _books[0].ImgUrl,
                 }
@@ -212,7 +212,7 @@ public class LibraryManagerEFTests
         {
             Isbn = _books[0].Isbn,
             Title = _books[0].Title,
-            Authour = _authours[0].Name,
+            Authour = _authors[0].Name,
             Publisher = _publishers[0].Name,
             ImgUrl = _books[0].ImgUrl,
         };

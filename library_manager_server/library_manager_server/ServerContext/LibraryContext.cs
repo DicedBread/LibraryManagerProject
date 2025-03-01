@@ -20,7 +20,7 @@ public partial class LibraryContext : DbContext
         optionsBuilder.UseNpgsql();
     }
 
-    public virtual DbSet<Authour> Authours { get; set; }
+    public virtual DbSet<Author> Authors { get; set; }
 
     public virtual DbSet<Book> Books { get; set; }
 
@@ -32,16 +32,16 @@ public partial class LibraryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Authour>(entity =>
+        modelBuilder.Entity<Author>(entity =>
         {
-            entity.HasKey(e => e.AuthourId).HasName("authours_pkey");
+            entity.HasKey(e => e.AuthorId).HasName("authors_pkey");
 
-            entity.ToTable("authours");
+            entity.ToTable("authors");
 
-            entity.Property(e => e.AuthourId).HasColumnName("authour_id");
+            entity.Property(e => e.AuthorId).HasColumnName("author_id");
             entity.Property(e => e.Name)
                 .HasMaxLength(500)
-                .HasColumnName("authour");
+                .HasColumnName("author");
         });
 
         modelBuilder.Entity<Book>(entity =>
@@ -55,9 +55,9 @@ public partial class LibraryContext : DbContext
             entity.Property(e => e.Isbn)
                 .HasMaxLength(50)
                 .HasColumnName("isbn");
-            entity.Property(e => e.AuthourId)
+            entity.Property(e => e.AuthorId)
                 .HasDefaultValue(1L)
-                .HasColumnName("authour_id");
+                .HasColumnName("author_id");
             entity.Property(e => e.ImgUrl)
                 .HasMaxLength(200)
                 .HasColumnName("img_url");
@@ -71,10 +71,10 @@ public partial class LibraryContext : DbContext
                 .HasMaxLength(500)
                 .HasColumnName("title");
 
-            entity.HasOne(d => d.Authour).WithMany(p => p.Books)
-                .HasForeignKey(d => d.AuthourId)
+            entity.HasOne(d => d.Author).WithMany(p => p.Books)
+                .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_authours");
+                .HasConstraintName("fk_authors");
 
             entity.HasOne(d => d.Publisher).WithMany(p => p.Books)
                 .HasForeignKey(d => d.PublisherId)

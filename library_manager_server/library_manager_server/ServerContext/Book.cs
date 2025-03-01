@@ -12,13 +12,13 @@ public partial class Book
 
     public string ImgUrl { get; set; } = null!;
 
-    public long AuthourId { get; set; }
+    public long AuthorId { get; set; }
 
     public long PublisherId { get; set; }
 
     public NpgsqlTsVector? TextSearch { get; set; }
 
-    public virtual Authour Authour { get; set; } = null!;
+    public virtual Author Author { get; set; } = null!;
 
     public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
 
