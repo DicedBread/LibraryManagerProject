@@ -2,8 +2,16 @@
 {
     public class User
     {
-        public required int Id { get; set; }
-        public required string Email { get; set; }
-        public required string UserName { get; set; }
+        public User(ServerContext.User user){
+            Id = user.UserId;
+            Email = user.Email;
+            Username = user.Username;
+        }
+
+        public User(){}
+
+        public long Id { get; set; }
+        public string Email { get; set; }
+        public string Username { get; set; }
     }
 }

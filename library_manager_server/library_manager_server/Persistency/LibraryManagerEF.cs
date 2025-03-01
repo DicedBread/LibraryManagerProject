@@ -37,17 +37,7 @@ public class LibraryManagerEF : ILibraryManager
             .Include(a => a.Authour)
             .Include(p => p.Publisher)
             .ToArray()
-            .Select<ServerContext.Book, ClientContext.Book>(e =>
-            {
-                return new ClientContext.Book
-                {
-                    Isbn = e.Isbn,
-                    Title = e.Title,
-                    Authour = e.Authour.Name,
-                    Publisher = e.Publisher.Name,
-                    ImgUrl = e.ImgUrl,
-                };
-            }).ToList();
+            .Select<ServerContext.Book, ClientContext.Book>(e => new ClientContext.Book(e)).ToList();
     }
 
     public List<ClientContext.Book> SearchBooks(string search, int limit, int offset)
@@ -63,17 +53,7 @@ public class LibraryManagerEF : ILibraryManager
             .Include(a => a.Authour)
             .Include(p => p.Publisher)
             .ToArray()
-            .Select<ServerContext.Book, ClientContext.Book>(e =>
-            {
-                return new ClientContext.Book
-                {
-                    Isbn = e.Isbn,
-                    Title = e.Title,
-                    Authour = e.Authour.Name,
-                    Publisher = e.Publisher.Name,
-                    ImgUrl = e.ImgUrl,
-                };
-            }).ToList();
+            .Select<ServerContext.Book, ClientContext.Book>(e => new ClientContext.Book(e)).ToList();
     }
 
     private string stringToStQuery(string query)
@@ -122,23 +102,7 @@ public class LibraryManagerEF : ILibraryManager
             .Include(e => e.IsbnNavigation.Authour)
             .Where(l => l.UserId == userId)
             .ToArray()
-            .Select<ServerContext.Loan, ClientContext.Loan>(l =>
-            {
-                return new ClientContext.Loan
-                {
-                    LoanId = l.LoanId,
-                    UserId = l.UserId,
-                    Date = l.Date,
-                    Book = new ClientContext.Book
-                    {
-                        Isbn = l.IsbnNavigation.Isbn,
-                        Title = l.IsbnNavigation.Title,
-                        Authour = l.IsbnNavigation.Authour.Name,
-                        Publisher = l.IsbnNavigation.Publisher.Name,
-                        ImgUrl = l.IsbnNavigation.ImgUrl,
-                    },
-                };
-            }).ToList();
+            .Select<ServerContext.Loan, ClientContext.Loan>(l => new ClientContext.Loan(l)).ToList();
     }
 
     public ClientContext.Loan? GetLoan(long loanId)
@@ -149,20 +113,7 @@ public class LibraryManagerEF : ILibraryManager
             .Include(e => e.IsbnNavigation.Authour)
             .FirstOrDefault(l => l.LoanId == loanId);
         if (loan is null) return null;
-        return new ClientContext.Loan()
-        {
-            LoanId = loan.LoanId,
-            UserId = loan.UserId,
-            Date = loan.Date,
-            Book = new ClientContext.Book()
-            {
-                Isbn = loan.IsbnNavigation.Isbn,
-                Title = loan.IsbnNavigation.Title,
-                Authour = loan.IsbnNavigation.Authour.Name,
-                Publisher = loan.IsbnNavigation.Publisher.Name,
-                ImgUrl = loan.IsbnNavigation.ImgUrl,
-            },
-        };
+        return new ClientContext.Loan(loan);
     }
 
     public ClientContext.Loan? CreateLoan(string isbn, long userId, DateOnly date)
@@ -185,20 +136,7 @@ public class LibraryManagerEF : ILibraryManager
                 context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Publisher).Load();
                 context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Authour).Load();
 
-                return new ClientContext.Loan
-                {
-                    LoanId = newLoan.Entity.LoanId,
-                    UserId = newLoan.Entity.UserId,
-                    Date = newLoan.Entity.Date,
-                    Book = new ClientContext.Book()
-                    {
-                        Isbn = newLoan.Entity.Isbn,
-                        Title = newLoan.Entity.IsbnNavigation.Title,
-                        Authour = newLoan.Entity.IsbnNavigation.Authour.Name,
-                        Publisher = newLoan.Entity.IsbnNavigation.Publisher.Name,
-                        ImgUrl = newLoan.Entity.IsbnNavigation.ImgUrl,
-                    },
-                };
+                return new ClientContext.Loan(newLoan.Entity);
             }
         }
         catch (DbUpdateException e)

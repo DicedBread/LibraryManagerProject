@@ -2,8 +2,20 @@
 
 public class Loan
 {
-    public required double LoanId { get; set; }
-    public required double UserId { get; set; }
-    public required Book Book { get; set; }
-    public required DateOnly Date { get; set; }
+    public Loan(ServerContext.Loan loan)
+    {
+        LoanId = loan.LoanId;
+        UserId = loan.UserId;
+        Book = new ClientContext.Book(loan.IsbnNavigation);
+        Date = loan.Date;
+    }
+
+    public Loan(){}
+
+    public long LoanId { get; set; }
+    public long UserId { get; set; }
+    public Book Book { get; set; }
+    public DateOnly Date { get; set; }
+
+    
 }

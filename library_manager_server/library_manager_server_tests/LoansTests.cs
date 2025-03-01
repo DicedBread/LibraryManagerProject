@@ -10,7 +10,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using NUnit.Framework.Internal;
-using Book = library_manager_server.ClientContext.Book;
 
 namespace library_manager_server_tests;
 
@@ -33,7 +32,7 @@ public class LoansTests
         _loans.Clear();
         for (int i = 0; i < 10; i++)
         {
-            _loans.Add(new library_manager_server.ClientContext.Loan()
+            _loans.Add(new Loan
             {
                 LoanId = i,
                 UserId = TestUserId,
