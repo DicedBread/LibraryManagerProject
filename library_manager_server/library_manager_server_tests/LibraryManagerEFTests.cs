@@ -369,7 +369,6 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Valid()
     {
-        Assert.Fail("need to refactor to account for num available");
 
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long testUserId = 1;
@@ -392,6 +391,7 @@ public class LibraryManagerEFTests
         Assert.That(createdLoan.Date, Is.EqualTo(testDate));
         Assert.That(createdLoan.LoanId, Is.EqualTo(loan.LoanId));
         Assert.That(createdLoan.Book.Isbn, Is.EqualTo(loan.Isbn));
+        Assert.That(createdLoan.Book.NumAvailable, Is.EqualTo(_books[5].NumAvailable - 1));
     }
 
     [Test]
@@ -418,6 +418,11 @@ public class LibraryManagerEFTests
         DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
         library_manager_server.ClientContext.Loan? createdLoan = lm.CreateLoan(testUserISBN, nonExistingUserId, testDate);
         Assert.That(createdLoan, Is.Null);
+    }
+
+    [Test]
+    public void CreateLoan_Invalid_NoAvalibleBooks(){
+        Assert.Fail();
     }
 
     [Test]

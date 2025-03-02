@@ -118,19 +118,27 @@ public class LibraryManagerEF : ILibraryManager
 
     public ClientContext.Loan? CreateLoan(string isbn, long userId, DateOnly date)
     {
+        // check avalible 
+
         try
         {
             LibraryContext context = new LibraryContext(dbContextOptions);
+            ServerContext.Book? book = context.Books.FirstOrDefault(b => b.Isbn == isbn);
+            if(book == null) return null;
+            if(book.NumAvailable <= 0) return null;
+
+            book.NumAvailable = book.NumAvailable - 1;
+
             EntityEntry<ServerContext.Loan> newLoan = context.Loans
                 .Add(new ServerContext.Loan()
                 {
                     Isbn = isbn,
-                    UserId = (long)userId,
+                    UserId = userId,
                     Date = date,
                 });
             int ret = context.SaveChanges();
 
-            if (ret == 1)
+            if (ret > 0)
             {
                 context.Entry(newLoan.Entity).Reference(e => e.IsbnNavigation).Load();
                 context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Publisher).Load();
@@ -141,7 +149,7 @@ public class LibraryManagerEF : ILibraryManager
         }
         catch (DbUpdateException e)
         {
-            Console.WriteLine(e);
+            // Console.WriteLine(e);
         }
         return null;
     }
@@ -160,7 +168,9 @@ public class LibraryManagerEF : ILibraryManager
         ServerContext.Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == loanId);
         if (loan != null)
         {
+            context.Entry(loan).Reference(e => e.IsbnNavigation).Load();
             context.Loans.Remove(loan);
+            loan.IsbnNavigation.NumAvailable++;
         }
         int ret = context.SaveChanges();
         if (ret == 1) return true;
