@@ -36,6 +36,7 @@ public class LibraryManagerEF : ILibraryManager
             .Skip(offset).Take(limit)
             .Include(a => a.Author)
             .Include(p => p.Publisher)
+            .OrderBy(b => b.Isbn)
             .ToArray()
             .Select<ServerContext.Book, ClientContext.Book>(e => new ClientContext.Book(e)).ToList();
     }

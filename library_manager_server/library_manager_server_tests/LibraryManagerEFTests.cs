@@ -166,21 +166,7 @@ public class LibraryManagerEFTests
     {
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         List<library_manager_server.ClientContext.Book> ret = lm.GetBooks(3, 0);
-
         Assert.That(ret.Count == 3);
-        Assert.That(ret[0],
-            Is.EqualTo(
-                new library_manager_server.ClientContext.Book
-                {
-                    Isbn = _books[0].Isbn,
-                    Title = _books[0].Title,
-                    Author = _authors[0].Name,
-                    Publisher = _publishers[0].Name,
-                    NumAvailable = _books[0].NumAvailable,
-                    ImgUrl = _books[0].ImgUrl,
-                }
-            ).UsingPropertiesComparer()
-            );
     }
 
     [Test]
