@@ -70,6 +70,9 @@ public partial class LibraryContext : DbContext
             entity.Property(e => e.Title)
                 .HasMaxLength(500)
                 .HasColumnName("title");
+            entity.Property(e => e.NumAvailable)
+                .HasColumnName("num_available")
+                .HasDefaultValue(1);
 
             entity.HasOne(d => d.Author).WithMany(p => p.Books)
                 .HasForeignKey(d => d.AuthorId)
