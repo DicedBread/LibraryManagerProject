@@ -49,15 +49,6 @@ public class LibraryManagerEFTests
     {
         await _postgreSqlContainer.StartAsync();
         Console.WriteLine("db container setup completed");
-        String connectionString = new Npgsql.NpgsqlConnectionStringBuilder()
-        {
-            Host = TestDbHost,
-            Port = TestDbPort,
-            Database = TestDbName,
-            Username = TestDbUser,
-            Password = TestDbPassword,
-        }.ConnectionString;
-
         LibraryContext context = new LibraryContext(_options.Options);
         await context.Database.MigrateAsync();
         Console.WriteLine("db migrated");
@@ -335,8 +326,6 @@ public class LibraryManagerEFTests
     [Test]
     public void GetLoans_Invalid_UserDoesNotExist()
     {
-        Assert.Fail("need to refactor to account for num available");
-
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         List<library_manager_server.ClientContext.Loan> loans = lm.GetLoans(20);
         Assert.That(loans.Count, Is.LessThanOrEqualTo(0));
@@ -345,8 +334,6 @@ public class LibraryManagerEFTests
     [Test]
     public void GetLoan_Valid()
     {
-        Assert.Fail("need to refactor to account for num available");
-
         long testId = 1;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         library_manager_server.ClientContext.Loan? loan = lm.GetLoan(testId);
@@ -358,8 +345,6 @@ public class LibraryManagerEFTests
     [Test]
     public void GetLoan_Invalid_LoanDoesnotExist()
     {
-        Assert.Fail("need to refactor to account for num available");
-
         long NoLoanTestId = 200;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         library_manager_server.ClientContext.Loan? loan = lm.GetLoan(NoLoanTestId);
@@ -369,7 +354,6 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Valid()
     {
-
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long testUserId = 1;
         string testUserISBN = _books[5].Isbn;
@@ -397,8 +381,6 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Invalid_NonExistingBook()
     {
-        Assert.Fail("need to refactor to account for num available");
-
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long testUserId = 1;
         string testUserISBN = "nonExistingISBN";
@@ -410,18 +392,24 @@ public class LibraryManagerEFTests
     [Test]
     public void CreateLoan_Invalid_NonExistingUser()
     {
-        Assert.Fail("need to refactor to account for num available");
-
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        LibraryContext context = new LibraryContext(_options.Options);
         long nonExistingUserId = 999;
-        string testUserISBN = _books[0].Isbn;
+        string testIsbn = _books[0].Isbn;
+        string testUserISBN = testIsbn;
+        Book? book = context.Books.FirstOrDefault(b => b.Isbn == testIsbn);
+        Assert.That(book, Is.Not.Null);
+        long oldNumAvalible = book.NumAvailable;        
         DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
         library_manager_server.ClientContext.Loan? createdLoan = lm.CreateLoan(testUserISBN, nonExistingUserId, testDate);
         Assert.That(createdLoan, Is.Null);
+        Assert.That(book.NumAvailable, Is.EqualTo(oldNumAvalible));
     }
 
     [Test]
     public void CreateLoan_Invalid_NoAvalibleBooks(){
+
+
         Assert.Fail();
     }
 
