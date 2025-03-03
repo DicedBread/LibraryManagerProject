@@ -169,11 +169,11 @@ public class LibraryManagerEF : ILibraryManager
         if (loan != null)
         {
             context.Entry(loan).Reference(e => e.IsbnNavigation).Load();
+            loan.IsbnNavigation.NumAvailable = loan.IsbnNavigation.NumAvailable + 1;
             context.Loans.Remove(loan);
-            loan.IsbnNavigation.NumAvailable++;
         }
         int ret = context.SaveChanges();
-        if (ret == 1) return true;
+        if (ret > 0) return true;
         return false;
     }
 

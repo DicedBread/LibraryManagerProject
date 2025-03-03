@@ -101,6 +101,7 @@ public class LibraryManagerEFTests
             context.Books.Add(book);
             _books.Add(book);
         }
+
         context.SaveChanges();
 
         for (int i = 0; i < numOfUsers; i++)
@@ -123,6 +124,7 @@ public class LibraryManagerEFTests
             };
             context.Loans.Add(loan);
             _loans.Add(loan);
+            loan.IsbnNavigation.NumAvailable--;
         }
         context.SaveChanges();
     }
@@ -343,7 +345,7 @@ public class LibraryManagerEFTests
     }
 
     [Test]
-    public void GetLoan_Invalid_LoanDoesnotExist()
+    public void GetLoan_Invalid_LoanDoesNotExist()
     {
         long NoLoanTestId = 200;
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
@@ -407,10 +409,14 @@ public class LibraryManagerEFTests
     }
 
     [Test]
-    public void CreateLoan_Invalid_NoAvalibleBooks(){
-
-
-        Assert.Fail();
+    public void CreateLoan_Invalid_NoAvailableBooks()
+    {
+        LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
+        long testUserId = 1;
+        string testUserISBN = _books[0].Isbn;
+        DateOnly testDate = DateOnly.FromDateTime(DateTime.MinValue);
+        library_manager_server.ClientContext.Loan? createdLoan = lm.CreateLoan(testUserISBN, testUserId, testDate);
+        Assert.That(createdLoan, Is.Null);
     }
 
     [Test]
@@ -436,14 +442,23 @@ public class LibraryManagerEFTests
     [Test]
     public void DeleteLoan_Valid()
     {
+        LibraryContext context = new LibraryContext(_options.Options);
+        Book? book = context.Books.FirstOrDefault(b => b.Isbn == _loans[0].Isbn);
+        Assert.That(book, Is.Not.Null);
+        long oldCount = book.NumAvailable; 
+        Assert.That(oldCount, Is.EqualTo(0));
+
         LibraryManagerEF lm = new LibraryManagerEF(_options.Options);
         long testLoanId = _loans[0].LoanId;
         bool deleted = lm.DeleteLoan(testLoanId);
         Assert.That(deleted, Is.True);
 
-        LibraryContext context = new LibraryContext(_options.Options);
         Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == testLoanId);
         Assert.That(loan, Is.Null);
+
+        context.Entry(book).Reload();
+        Assert.That(book, Is.Not.Null);
+        Assert.That(book.NumAvailable, Is.EqualTo(oldCount + 1));
     }
 
     [Test]
