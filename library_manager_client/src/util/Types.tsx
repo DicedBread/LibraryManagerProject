@@ -1,9 +1,10 @@
 export interface Book{
     isbn:string,
     title:string,
-    authour:string,
+    author:string,
     publisher:string,
-    imgUrl:string
+    imgUrl:string,
+    numAvailable:number
 }
 
 export interface Loan{

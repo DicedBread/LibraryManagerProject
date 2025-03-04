@@ -6,19 +6,21 @@ namespace library_manager_server.ServerContext;
 
 public partial class Book
 {
-    public string Isbn { get; set; } = null!;
+    public required string Isbn { get; set; } 
 
-    public string Title { get; set; } = null!;
+    public required string Title { get; set; } 
 
-    public string ImgUrl { get; set; } = null!;
+    public required string ImgUrl { get; set; } 
 
-    public long AuthourId { get; set; }
+    public long NumAvailable { get; set; }
+
+    public long AuthorId { get; set; }
 
     public long PublisherId { get; set; }
 
     public NpgsqlTsVector? TextSearch { get; set; }
 
-    public virtual Authour Authour { get; set; } = null!;
+    public virtual Author Author { get; set; } = null!;
 
     public virtual ICollection<Loan> Loans { get; set; } = new List<Loan>();
 
