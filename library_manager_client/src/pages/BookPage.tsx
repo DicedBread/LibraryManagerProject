@@ -145,7 +145,6 @@ function BookModule({ book }: { book: Book }) {
                             width: "auto"
                         }
                     }}
-
                 >
                     <img src={book.imgUrl} alt={book.title + " book image"} />
                 </Box>
@@ -161,10 +160,15 @@ function BookModule({ book }: { book: Book }) {
                         }}
                     >
                         <h4>{book.title}</h4>
-                        <p>{book.authour}</p>
+                        <p>{book.author}</p>
                     </Box>
                     <Stack alignSelf={"flex-end"}>
-                        <Button onClick={() => HandleLoan(book.isbn)} variant={"contained"} sx={{ width: "100px" }}>Loan</Button>
+                        {book.numAvailable > 0 ? (
+                                <Button onClick={() => HandleLoan(book.isbn)} variant={"contained"} sx={{ width: "100px" }} >Loan</Button>
+                            ) : (
+                                <Button onClick={() => HandleLoan(book.isbn)} variant={"contained"} sx={{ width: "100px" }} color="error" >Unavailable</Button>
+                            )
+                        }
                     </Stack>
                 </Stack>
             </Stack>
