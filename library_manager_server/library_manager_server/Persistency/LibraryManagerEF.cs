@@ -20,7 +20,7 @@ public class LibraryManagerEF : ILibraryManager
     public ClientContext.Book? GetBook(string isbn)
     {
         ServerContext.Book? b = new LibraryContext(this.dbContextOptions).Books
-            .Include(e => e.Authour)
+            .Include(e => e.Author)
             .Include(e => e.Publisher)
             .FirstOrDefault(e => e.Isbn == isbn);
 
@@ -34,8 +34,9 @@ public class LibraryManagerEF : ILibraryManager
         if (limit < 0 || offset < 0) throw new ArgumentException("Limit and offset cannot be negative");
         return new LibraryContext(dbContextOptions).Books
             .Skip(offset).Take(limit)
-            .Include(a => a.Authour)
+            .Include(a => a.Author)
             .Include(p => p.Publisher)
+            .OrderBy(b => b.Isbn)
             .ToArray()
             .Select<ServerContext.Book, ClientContext.Book>(e => new ClientContext.Book(e)).ToList();
     }
@@ -50,7 +51,7 @@ public class LibraryManagerEF : ILibraryManager
                       WHERE text_search @@ to_tsquery({searchQuery})
                       """)
             .Skip(offset).Take(limit)
-            .Include(a => a.Authour)
+            .Include(a => a.Author)
             .Include(p => p.Publisher)
             .ToArray()
             .Select<ServerContext.Book, ClientContext.Book>(e => new ClientContext.Book(e)).ToList();
@@ -99,7 +100,7 @@ public class LibraryManagerEF : ILibraryManager
         return new LibraryContext(dbContextOptions).Loans
             .Include(e => e.IsbnNavigation)
             .Include(e => e.IsbnNavigation.Publisher)
-            .Include(e => e.IsbnNavigation.Authour)
+            .Include(e => e.IsbnNavigation.Author)
             .Where(l => l.UserId == userId)
             .ToArray()
             .Select<ServerContext.Loan, ClientContext.Loan>(l => new ClientContext.Loan(l)).ToList();
@@ -110,7 +111,7 @@ public class LibraryManagerEF : ILibraryManager
         ServerContext.Loan? loan = new LibraryContext(dbContextOptions).Loans
             .Include(e => e.IsbnNavigation)
             .Include(e => e.IsbnNavigation.Publisher)
-            .Include(e => e.IsbnNavigation.Authour)
+            .Include(e => e.IsbnNavigation.Author)
             .FirstOrDefault(l => l.LoanId == loanId);
         if (loan is null) return null;
         return new ClientContext.Loan(loan);
@@ -118,30 +119,38 @@ public class LibraryManagerEF : ILibraryManager
 
     public ClientContext.Loan? CreateLoan(string isbn, long userId, DateOnly date)
     {
+        // check avalible 
+
         try
         {
             LibraryContext context = new LibraryContext(dbContextOptions);
+            ServerContext.Book? book = context.Books.FirstOrDefault(b => b.Isbn == isbn);
+            if(book == null) return null;
+            if(book.NumAvailable <= 0) return null;
+
+            book.NumAvailable = book.NumAvailable - 1;
+
             EntityEntry<ServerContext.Loan> newLoan = context.Loans
                 .Add(new ServerContext.Loan()
                 {
                     Isbn = isbn,
-                    UserId = (long)userId,
+                    UserId = userId,
                     Date = date,
                 });
             int ret = context.SaveChanges();
 
-            if (ret == 1)
+            if (ret > 0)
             {
                 context.Entry(newLoan.Entity).Reference(e => e.IsbnNavigation).Load();
                 context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Publisher).Load();
-                context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Authour).Load();
+                context.Entry(newLoan.Entity.IsbnNavigation).Reference(e => e.Author).Load();
 
                 return new ClientContext.Loan(newLoan.Entity);
             }
         }
         catch (DbUpdateException e)
         {
-            Console.WriteLine(e);
+            // Console.WriteLine(e);
         }
         return null;
     }
@@ -160,10 +169,12 @@ public class LibraryManagerEF : ILibraryManager
         ServerContext.Loan? loan = context.Loans.FirstOrDefault(l => l.LoanId == loanId);
         if (loan != null)
         {
+            context.Entry(loan).Reference(e => e.IsbnNavigation).Load();
+            loan.IsbnNavigation.NumAvailable = loan.IsbnNavigation.NumAvailable + 1;
             context.Loans.Remove(loan);
         }
         int ret = context.SaveChanges();
-        if (ret == 1) return true;
+        if (ret > 0) return true;
         return false;
     }
 

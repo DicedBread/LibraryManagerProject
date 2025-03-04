@@ -4,15 +4,17 @@
     {
         public string Isbn { get; set; }
         public string Title { get; set; }
-        public string Authour { get; set; }
+        public string Author { get; set; }
         public string Publisher { get; set; }
+        public long NumAvailable { get; set; }
         public string ImgUrl { get; set; }
 
         public Book(ServerContext.Book book){
             Isbn = book.Isbn;
             Title = book.Title;
-            Authour = book.Authour.Name;
+            Author = book.Author.Name;
             Publisher = book.Publisher.Name;
+            NumAvailable = book.NumAvailable;
             ImgUrl = book.ImgUrl;
         }    
 

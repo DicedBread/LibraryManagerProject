@@ -3,7 +3,8 @@ export interface Book{
     title:string,
     author:string,
     publisher:string,
-    imgUrl:string
+    imgUrl:string,
+    numAvailable:number
 }
 
 export interface Loan{

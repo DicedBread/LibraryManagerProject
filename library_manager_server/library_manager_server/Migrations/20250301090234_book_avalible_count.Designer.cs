@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using library_manager_server.ServerContext;
 namespace library_manager_server.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20250301090234_book_avalible_count")]
+    partial class book_avalible_count
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,10 +67,8 @@ namespace library_manager_server.Migrations
                         .HasColumnName("img_url");
 
                     b.Property<long>("NumAvailable")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasDefaultValue(1L)
-                        .HasColumnName("num_available");
+                        .HasDefaultValue(1);
 
                     b.Property<long>("PublisherId")
                         .ValueGeneratedOnAdd()
