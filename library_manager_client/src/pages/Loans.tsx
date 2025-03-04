@@ -72,7 +72,7 @@ function Loans(){
                     >
                         <Stack spacing={0.2}>
                             <h3>{loan.book.title}</h3>
-                            <p>{loan.book.authour}</p>
+                            <p>{loan.book.author}</p>
                         </Stack>
                         <Stack spacing={2}>
                             <p>{new Date(loan.date).toUTCString()}</p>

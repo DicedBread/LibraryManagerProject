@@ -1,7 +1,7 @@
 export interface Book{
     isbn:string,
     title:string,
-    authour:string,
+    author:string,
     publisher:string,
     imgUrl:string
 }
