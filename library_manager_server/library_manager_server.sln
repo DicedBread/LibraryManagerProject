@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library_manager_server", "l
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library_manager_server_tests", "library_manager_server_tests\library_manager_server_tests.csproj", "{0FD41993-FE2F-446B-857E-9E501C400EAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "library_manager_server_virtual_client", "library_manager_server_virtual_client\library_manager_server_virtual_client.csproj", "{3F776445-D71E-43CB-804B-51410C8C6176}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0FD41993-FE2F-446B-857E-9E501C400EAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FD41993-FE2F-446B-857E-9E501C400EAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FD41993-FE2F-446B-857E-9E501C400EAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F776445-D71E-43CB-804B-51410C8C6176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F776445-D71E-43CB-804B-51410C8C6176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F776445-D71E-43CB-804B-51410C8C6176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F776445-D71E-43CB-804B-51410C8C6176}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
