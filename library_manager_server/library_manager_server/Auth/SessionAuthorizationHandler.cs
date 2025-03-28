@@ -12,6 +12,7 @@ namespace library_manager_server
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ActiveSessionRequirement requirement)
         {
+            logger.LogInformation($"User Clams count {context.User.Claims.Count()}");
             string o = "";
             foreach (Claim claim in context.User.Claims)
             {

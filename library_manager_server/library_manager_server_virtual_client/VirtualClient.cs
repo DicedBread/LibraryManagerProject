@@ -6,27 +6,22 @@ namespace library_manager_server_virtual_client;
 
 class VirtualClient{
     
-    static readonly HttpClient client = new HttpClient();
+    // static readonly HttpClient client = new HttpClient();
+    string domain = "https://localhost:8080";
 
     public VirtualClient(){
     }   
 
     public async Task Run(){
-        Console.WriteLine("Starting client");
-        await GetBook();
-    } 
+        using HttpResponseMessage res = await new LibraryUrlBuilder(domain).Login("test@test", "test");
+        res.EnsureSuccessStatusCode();
+        Console.WriteLine(res.StatusCode);
+        Console.WriteLine(res.Headers);
+        
+        using HttpResponseMessage logoutRes = await new LibraryUrlBuilder(domain).Logout();
+        logoutRes.EnsureSuccessStatusCode();
+        Console.WriteLine(logoutRes.StatusCode);
+        
+    }
 
-    public async Task GetBook(){
-        try
-        {
-            using HttpResponseMessage response = await client.GetAsync("http://localhost/api/Books?limit=20&offset=0");
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("COnt: \n" + responseBody);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    } 
 }

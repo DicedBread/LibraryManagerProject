@@ -5,6 +5,8 @@ WORKDIR /source
 COPY *.sln .
 COPY library_manager_server/*.csproj ./library_manager_server/
 COPY library_manager_server_tests/*.csproj ./library_manager_server_tests/
+COPY library_manager_server_virtual_client/*.csproj ./library_manager_server_virtual_client/
+
 RUN dotnet restore
 
 # copy everything else and build app
