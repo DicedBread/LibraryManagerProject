@@ -32,6 +32,6 @@ CERT_PASSWORD= password used to create cert file
 ---
 
 ### Swagger documentation screenshot
-![ui](/images/Endpoints.png)
+![ui](/images/endpoints.png)
 ### example of ui 
 ![ui](/images/UI.png)
