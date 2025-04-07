@@ -1,15 +1,15 @@
 # Stack
-* ### React
+* React
     * Mui components 
 
-* ### C# 
+* C# 
     * ASP.net MVC
     * EF core
     * NUnit
     * [Testcontainers](https://dotnet.testcontainers.org/) for integration testing
 
-* ### Postgres
-* ### Docker
+* Postgres
+* Docker
 
 
 # Setup
